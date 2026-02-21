@@ -201,34 +201,36 @@ function shareWeek(){
   var bg=x.createLinearGradient(0,0,540,540);bg.addColorStop(0,'#0c1a0c');bg.addColorStop(0.4,'#1a2e1a');bg.addColorStop(1,'#0d1f15');
   x.fillStyle=bg;x.fillRect(0,0,540,540);
   // Header
-  x.fillStyle='#6B9B6B';x.font='12px Georgia';x.textAlign='center';x.fillText('THRIVE37',270,40);
-  x.fillStyle='#86EFAC';x.font='28px Georgia';x.fillText('My Week',270,75);
+  x.fillStyle='#86EFAC';x.font='bold 32px Georgia';x.textAlign='center';x.fillText('Thrive37',270,50);
+  x.fillStyle='#6B9B6B';x.font='13px Georgia';x.fillText('37 foods backed by science for a longer, healthier life',270,75);
   // Week ring
   var wc=getWF().size,pct=wc/T;
-  x.beginPath();x.arc(270,195,70,0,Math.PI*2);x.strokeStyle='#1a3a1a';x.lineWidth=8;x.stroke();
-  x.beginPath();x.arc(270,195,70,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(pct,1));x.strokeStyle='#A78BFA';x.lineWidth=8;x.lineCap='round';x.stroke();
-  x.fillStyle='#A78BFA';x.font='bold 42px Georgia';x.fillText(wc,270,205);
-  x.fillStyle='#6B9B6B';x.font='14px Georgia';x.fillText('/'+T+' foods',270,225);
+  x.beginPath();x.arc(270,190,70,0,Math.PI*2);x.strokeStyle='#1a3a1a';x.lineWidth=8;x.stroke();
+  x.beginPath();x.arc(270,190,70,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(pct,1));x.strokeStyle='#A78BFA';x.lineWidth=8;x.lineCap='round';x.stroke();
+  x.fillStyle='#A78BFA';x.font='bold 42px Georgia';x.fillText(wc,270,200);
+  x.fillStyle='#6B9B6B';x.font='14px Georgia';x.fillText('/'+T+' foods this week',270,222);
   // Stats
   var streak=calcStreak(),roll=calcRolling52();
-  x.fillStyle='#F87171';x.font='18px Georgia';x.fillText('\uD83D\uDD25 '+streak+' week streak',270,300);
-  x.fillStyle='#A78BFA';x.font='16px Georgia';x.fillText('\uD83D\uDCC5 '+roll+'/52 weeks',270,330);
+  x.fillStyle='#F87171';x.font='18px Georgia';x.fillText('\uD83D\uDD25 '+streak+' week streak',270,290);
+  x.fillStyle='#A78BFA';x.font='16px Georgia';x.fillText('\uD83D\uDCC5 '+roll+'/52 weeks',270,318);
   // Food grid
   var checked=FOODS.filter(function(f){return getWF().has(f.id)});
-  var row=0,col=0,startX=50,startY=370;
+  var row=0,col=0,startX=50,startY=360;
   x.font='20px serif';x.textAlign='left';
   checked.forEach(function(f,i){
     x.fillText(f.emoji,startX+col*42,startY+row*32);
     col++;if(col>=11){col=0;row++}
   });
   // Footer
-  x.textAlign='center';x.fillStyle='#3A5A3A';x.font='11px Georgia';x.fillText('Eat smarter. Feel better. Live longer.',270,520);
+  x.textAlign='center';x.fillStyle='#7A9B7A';x.font='12px Georgia';x.fillText('Eat smarter. Feel better. Live longer.',270,515);
+
+  var shareText='\uD83C\uDF3F I hit '+wc+'/'+T+' foods this week on Thrive37! Track 37 science-backed foods for better health & longevity. \uD83D\uDD25 '+streak+' week streak!';
 
   c.toBlob(function(blob){
     if(navigator.share&&navigator.canShare){
       var file=new File([blob],'thrive37-week.png',{type:'image/png'});
       if(navigator.canShare({files:[file]})){
-        navigator.share({files:[file],text:'My Thrive37 week: '+wc+'/'+T+' foods! \uD83C\uDF3F'}).catch(function(){});return;
+        navigator.share({files:[file],text:shareText}).catch(function(){});return;
       }
     }
     // Fallback: download
@@ -292,63 +294,54 @@ function render(){
   // ========== MAIN APP ==========
   var h='';
 
-  // Header
-  h+='<div style="padding:18px 16px 6px;text-align:center;position:relative;z-index:1">';
-  h+='<div style="font-size:7px;letter-spacing:4px;color:#6B9B6B">THRIVE37</div>';
-  h+='<h1 style="font-size:clamp(20px,5vw,30px);font-weight:400;background:linear-gradient(to right,#86EFAC,#FDE68A,#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:2px 0">Thrive 37</h1>';
-  h+='<p style="font-size:9px;color:#7A9B7A;font-style:italic">Eat smarter. Feel better. Live longer.</p>';
-  h+='<p style="font-size:6.5px;color:#3A5A3A;margin-top:4px;letter-spacing:0.5px">Developed by Bendik Wanvik</p>';
+  // Header — compact, clean
+  h+='<div style="padding:14px 16px 6px;text-align:center;position:relative;z-index:1">';
+  h+='<h1 style="font-size:clamp(18px,4.5vw,24px);font-weight:400;background:linear-gradient(to right,#86EFAC,#FDE68A,#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0;line-height:1.2">Thrive37</h1>';
+  h+='<p style="font-size:8px;color:#7A9B7A;font-style:italic;margin:3px 0 0">Eat smarter. Feel better. Live longer.</p>';
   h+='</div>';
 
-  // Welcome message
-  var greet='';
-  var dow=today.getDay(),left=WEEKLY-wc;
-  // Check days since last log
-  var daysSince=99;
-  for(var li=1;li<=7;li++){var ld=new Date(today);ld.setDate(ld.getDate()-li);var ldk=gDK(ld);var found=false;Object.values(S.wd).forEach(function(days){if(days[ldk]&&days[ldk].length>0)found=true});if(found){daysSince=li;break}}
-
-  if(wc>=T)greet='\u2728 Perfect week! All '+T+' foods!';
-  else if(wc>=WEEKLY&&dow>=5)greet='\uD83D\uDD25 Streak secured! '+wc+'/'+T+' — keep adding!';
-  else if(left===1)greet='\uD83C\uDFAF One more for your streak!';
-  else if(left<=5&&left>1)greet='\uD83D\uDCAA Almost there — just '+left+' more for 25!';
-  else if(daysSince>=3&&tc===0)greet='\uD83D\uDC4B Welcome back! Tap any day to fill in your week';
-  else if(dow<=1&&tc===0)greet='\uD83C\uDF1F Fresh week! Let\u2019s go';
-  else if(wc>=15)greet='\uD83D\uDE80 '+wc+'/'+T+' so far — great momentum!';
-  else if(wc>=8)greet='\uD83C\uDF31 '+wc+'/'+T+' this week — building nicely';
-  else greet='\uD83D\uDC4B '+wc+'/'+T+' so far — every food counts!';
-  h+='<div style="text-align:center;padding:0 16px 6px;position:relative;z-index:1"><div style="font-size:10px;color:#C4DCC4;padding:4px 14px;display:inline-block;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.1);border-radius:16px">'+greet+'</div></div>';
-
-  // Rings — week is central and larger
-  h+='<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:0 16px 4px;position:relative;z-index:1">';
-  // Today ring (small left)
-  var tProg=Math.min(tdc/DAILY,1)*101;
-  h+='<div style="text-align:center"><div style="position:relative;width:42px;height:42px;margin:0 auto"><svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="16" fill="none" stroke="#1a3a1a" stroke-width="3"/><circle cx="23" cy="23" r="16" fill="none" stroke="#22C55E" stroke-width="3" stroke-dasharray="'+tProg+' 101" stroke-linecap="round" transform="rotate(-90 23 23)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:#22C55E">'+tdc+'</div></div><div style="font-size:5.5px;color:#6B9B6B;margin-top:1px;letter-spacing:1px">TODAY</div><div style="font-size:6px;color:#22C55E">'+(tdc>=DAILY?'\u2713 Goal!':(DAILY-tdc)+' more')+'</div></div>';
-  // Week ring (big center)
+  // Rings — day (left) + week (right, bigger)
+  h+='<div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:4px 16px 10px;position:relative;z-index:1">';
+  // Today ring
+  var tProg=Math.min(tdc/DAILY,1)*113;
+  h+='<div style="text-align:center">';
+  h+='<div style="position:relative;width:46px;height:46px;margin:0 auto">';
+  h+='<svg width="46" height="46" viewBox="0 0 50 50"><circle cx="25" cy="25" r="18" fill="none" stroke="#1a3a1a" stroke-width="3"/><circle cx="25" cy="25" r="18" fill="none" stroke="#22C55E" stroke-width="3" stroke-dasharray="'+tProg+' 113" stroke-linecap="round" transform="rotate(-90 25 25)"/></svg>';
+  h+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:#22C55E">'+tdc+'<span style="font-size:7px;color:#6B9B6B">/'+DAILY+'</span></div>';
+  h+='</div>';
+  h+='<div style="font-size:6px;color:#6B9B6B;margin-top:1px;letter-spacing:1px">TODAY</div>';
+  h+='</div>';
+  // Week ring — larger
   var wProg=Math.min(wc/T,1)*201;var w25=(WEEKLY/T)*201;
-  h+='<div style="text-align:center;margin:0 4px"><div style="position:relative;width:80px;height:80px;margin:0 auto"><svg width="80" height="80" viewBox="0 0 84 84"><circle cx="42" cy="42" r="32" fill="none" stroke="#1a3a1a" stroke-width="4.5"/><circle cx="42" cy="42" r="32" fill="none" stroke="#A78BFA" stroke-width="4.5" stroke-dasharray="'+wProg+' 201" stroke-linecap="round" transform="rotate(-90 42 42)"/><circle cx="42" cy="42" r="32" fill="none" stroke="rgba(250,204,21,0.18)" stroke-width="1.5" stroke-dasharray="'+w25+' 201" stroke-linecap="round" transform="rotate(-90 42 42)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div style="font-size:22px;font-weight:bold;color:#A78BFA;line-height:1">'+wc+'<span style="font-size:10px;color:#6B9B6B">/'+T+'</span></div><div style="font-size:6px;color:#6B9B6B;margin-top:-1px">THIS WEEK</div></div></div><div style="font-size:6.5px;color:#A78BFA;margin-top:1px">'+(wc>=WEEKLY?'\u2605 Streak!':Math.max(WEEKLY-wc,0)+' to 25')+'</div></div>';
-  // Month ring (small right)
-  var mProg=Math.min(mc/T,1)*101;
-  h+='<div style="text-align:center"><div style="position:relative;width:42px;height:42px;margin:0 auto"><svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="16" fill="none" stroke="#1a3a1a" stroke-width="3"/><circle cx="23" cy="23" r="16" fill="none" stroke="#F59E0B" stroke-width="3" stroke-dasharray="'+mProg+' 101" stroke-linecap="round" transform="rotate(-90 23 23)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:#F59E0B">'+mc+'</div></div><div style="font-size:5.5px;color:#6B9B6B;margin-top:1px;letter-spacing:1px">'+mn[today.getMonth()].toUpperCase()+'</div><div style="font-size:6px;color:#F59E0B">'+(mc>=T?'\uD83E\uDD47 All!':T-mc+' to go')+'</div></div>';
+  h+='<div style="text-align:center">';
+  h+='<div style="position:relative;width:78px;height:78px;margin:0 auto">';
+  h+='<svg width="78" height="78" viewBox="0 0 82 82"><circle cx="41" cy="41" r="32" fill="none" stroke="#1a3a1a" stroke-width="4"/><circle cx="41" cy="41" r="32" fill="none" stroke="#A78BFA" stroke-width="4" stroke-dasharray="'+wProg+' 201" stroke-linecap="round" transform="rotate(-90 41 41)"/><circle cx="41" cy="41" r="32" fill="none" stroke="rgba(250,204,21,0.18)" stroke-width="1.5" stroke-dasharray="'+w25+' 201" stroke-linecap="round" transform="rotate(-90 41 41)"/></svg>';
+  h+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">';
+  h+='<div style="font-size:20px;font-weight:bold;color:#A78BFA;line-height:1">'+wc+'<span style="font-size:9px;color:#6B9B6B">/'+T+'</span></div>';
+  h+='</div></div>';
+  h+='<div style="font-size:6px;color:#6B9B6B;margin-top:1px;letter-spacing:1px">THIS WEEK</div>';
+  h+='</div>';
   h+='</div>';
 
-  // Stats bar
-  h+='<div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:2px 16px 4px;position:relative;z-index:1;font-size:8px">';
-  h+='<span style="color:#F87171">\uD83D\uDD25 '+streak+' week'+(streak!==1?'s':'')+'</span>';
-  h+='<span style="color:#A78BFA">\uD83D\uDCC5 '+roll52+'/52 weeks</span>';
-  if(bi)h+='<span>'+bi+' '+mn[today.getMonth()]+'</span>';
-  h+='<button onclick="shareWeek()" style="background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:2px 8px;font-size:8px;color:#A78BFA;font-family:inherit;display:flex;align-items:center;gap:3px">\uD83D\uDCE4 Share</button>';
-  h+='</div>';
+  // Goal + stats combined row
+  h+='<div style="text-align:center;padding:0 16px 6px;position:relative;z-index:1">';
+  h+='<div style="font-size:7.5px;color:#5A8A5A;margin-bottom:5px">Hit <span style="color:#22C55E">10 daily</span> · Reach <span style="color:#A78BFA">25 weekly</span> for your streak</div>';
+  h+='<div style="display:flex;justify-content:center;align-items:center;gap:10px;font-size:7.5px">';
+  h+='<span style="color:#F87171;font-weight:bold;font-size:8.5px">\uD83D\uDD25 '+streak+' week streak</span>';
+  h+='<span style="color:#A78BFA">\uD83D\uDCC5 '+roll52+'/52</span>';
+  h+='<button onclick="shareWeek()" style="background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:2px 7px;font-size:7px;color:#A78BFA;font-family:inherit">\uD83D\uDCE4</button>';
+  h+='</div></div>';
 
   // Previous week
   if(pw){
-    h+='<div style="text-align:center;padding:1px 16px 3px;position:relative;z-index:1"><div style="display:inline-block;font-size:7.5px;padding:2px 10px;border-radius:10px;background:'+(pw.ok?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.06)')+';border:1px solid '+(pw.ok?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.1)')+';color:'+(pw.ok?'#86EFAC':'#F87171')+'">Last week: '+pw.count+'/'+T+' '+(pw.ok?'\u2713':'')+'</div></div>';
+    h+='<div style="text-align:center;padding:0 16px 6px;position:relative;z-index:1"><div style="display:inline-block;font-size:7px;padding:3px 12px;border-radius:10px;background:'+(pw.ok?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.06)')+';border:1px solid '+(pw.ok?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.1)')+';color:'+(pw.ok?'#86EFAC':'#F87171')+'">Last week: '+pw.count+'/'+T+' '+(pw.ok?'\u2713':'')+'</div></div>';
   }
 
   // Week strip
-  h+='<div style="display:flex;justify-content:center;gap:3px;padding:2px 12px 2px;position:relative;z-index:1">';
+  h+='<div style="display:flex;justify-content:center;gap:3px;padding:2px 12px 6px;position:relative;z-index:1">';
   wds.forEach(function(d,i){
     var dk=gDK(d),df=(wkd[dk]||[]).length,isT=dk===tk,fu=d>today,isA=dk===ad;
-    h+='<div '+((!fu)?('onclick="selectDay(\''+dk+'\')"'):'')+' style="width:33px;text-align:center;opacity:'+(fu?0.3:1)+';'+(!fu?'cursor:pointer':'')+'"><div style="font-size:6.5px;color:#6B9B6B;letter-spacing:1px">'+dn[i]+'</div><div style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:1px auto;font-size:8.5px;font-weight:'+(isA?'bold':'normal')+';background:'+(isA?'rgba(34,197,94,0.25)':df>=10?'rgba(34,197,94,0.1)':'transparent')+';border:'+(isA?'2px solid #22C55E':isT?'1.5px solid rgba(34,197,94,0.4)':df>=10?'1px solid rgba(34,197,94,0.3)':'1px solid rgba(107,155,107,0.12)')+';color:'+(isA?'#22C55E':df>=10?'#86EFAC':'#7A9B7A')+'">'+d.getDate()+'</div>'+(!fu?'<div style="font-size:6.5px;color:'+(df>=10?'#22C55E':'#6B9B6B')+'">'+(df>0?df:'\u00B7')+'</div>':'')+'</div>';
+    h+='<div '+((!fu)?('onclick="selectDay(\''+dk+'\')"'):'')+' style="width:33px;text-align:center;opacity:'+(fu?0.3:1)+';'+(!fu?'cursor:pointer':'')+'"><div style="font-size:6.5px;color:#6B9B6B;letter-spacing:1px">'+dn[i]+'</div><div style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:2px auto;font-size:8.5px;font-weight:'+(isA?'bold':'normal')+';background:'+(isA?'rgba(34,197,94,0.25)':df>=10?'rgba(34,197,94,0.1)':'transparent')+';border:'+(isA?'2px solid #22C55E':isT?'1.5px solid rgba(34,197,94,0.4)':df>=10?'1px solid rgba(34,197,94,0.3)':'1px solid rgba(107,155,107,0.12)')+';color:'+(isA?'#22C55E':df>=10?'#86EFAC':'#7A9B7A')+'">'+d.getDate()+'</div>'+(!fu?'<div style="font-size:6.5px;color:'+(df>=10?'#22C55E':'#6B9B6B')+'">'+(df>0?df:'\u00B7')+'</div>':'')+'</div>';
   });
   h+='</div>';
 
@@ -358,24 +351,39 @@ function render(){
     h+='<div style="text-align:center;padding:3px 16px;z-index:1;position:relative"><div style="display:inline-flex;align-items:center;gap:6px;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.2);border-radius:16px;padding:3px 10px"><span style="font-size:8px;color:#FDE68A">\u270F\uFE0F '+dN+' '+pp[2]+'/'+pp[1]+'</span><button onclick="selectDay(\''+tk+'\')" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:2px 7px;font-size:7px;color:#86EFAC;font-family:inherit">\u2190 Today</button></div></div>';
   }
 
-  // Nav
+  // Nav tabs
   var views=[{id:"board",l:"Foods"},{id:"rda",l:"Nutrients"},{id:"science",l:"Science"},{id:"stats",l:"Progress"}];
-  h+='<div style="display:flex;justify-content:center;gap:0;padding:5px 12px 6px;position:relative;z-index:1">';
+  h+='<div style="display:flex;justify-content:center;gap:0;padding:0 12px 10px;position:relative;z-index:1">';
   views.forEach(function(v,i){
-    h+='<button onclick="sv(\''+v.id+'\')" style="padding:4px 10px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid '+(S.view===v.id?'#22C55E':'rgba(107,155,107,0.2)')+';color:'+(S.view===v.id?'#86EFAC':'#6B9B6B')+';background:'+(S.view===v.id?'rgba(34,197,94,0.15)':'transparent')+';border-radius:'+(i===0?'16px 0 0 16px':i===3?'0 16px 16px 0':'0')+';font-family:inherit">'+v.l+'</button>';
+    h+='<button onclick="sv(\''+v.id+'\')" style="padding:6px 10px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid '+(S.view===v.id?'#22C55E':'rgba(107,155,107,0.2)')+';color:'+(S.view===v.id?'#86EFAC':'#6B9B6B')+';background:'+(S.view===v.id?'rgba(34,197,94,0.15)':'transparent')+';border-radius:'+(i===0?'16px 0 0 16px':i===3?'0 16px 16px 0':'0')+';font-family:inherit">'+v.l+'</button>';
   });
-  h+='</div><div style="padding:0 8px 100px;position:relative;z-index:1">';
+  h+='</div><div style="padding:0 6px 100px;position:relative;z-index:1">';
 
   // ========== FOODS TAB ==========
   if(S.view==="board"){
-    h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;max-width:920px;margin:0 auto">';
+    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:420px;margin:0 auto">';
     FOODS.forEach(function(f,idx){
       var ch=!!S.ck[f.id],hw=wf.has(f.id);
-      h+='<div onclick="toggle(\''+f.id+'\')" class="'+(ch?'card-pop':'')+'" style="border-radius:10px;padding:8px 9px;cursor:pointer;position:relative;border:1px solid '+(ch?'rgba(34,197,94,0.5)':'rgba(107,155,107,0.08)')+';background:'+(ch?'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.08))':'rgba(255,255,255,0.02)')+';transition:all 0.2s'+(ch?';box-shadow:0 0 12px rgba(34,197,94,0.08)':'')+';">';
-      if(hw&&!ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:5px;color:#A78BFA;letter-spacing:1px">\u2713 WK</div>';
-      if(ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:12px;color:#22C55E">\u2713</div>';
-      h+='<div style="display:flex;align-items:center;gap:6px"><span style="font-size:18px;'+(ch?'':'opacity:0.5;filter:grayscale(0.4)')+'">'+f.emoji+'</span><div style="min-width:0"><div style="font-size:12px;font-weight:bold;color:'+(ch?'#86EFAC':'#8A9A8A')+';line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+f.name+'</div><div style="font-size:8px;color:'+(ch?'#6B9B6B':'#4A6A4A')+';line-height:1.2;margin-top:1px">'+f.sub+'</div></div></div>';
-      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;padding-left:32px"><div style="font-size:8px;color:'+(ch?'#5A8A5A':'#3A5A3A')+'">'+f.por+'</div><button onclick="event.stopPropagation();om('+idx+')" style="background:none;border:1px solid '+(ch?'rgba(107,155,107,0.3)':'rgba(107,155,107,0.15)')+';border-radius:50%;width:18px;height:18px;color:#6B9B6B;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:inherit">i</button></div>';
+      // Card
+      h+='<div onclick="toggle(\''+f.id+'\')" class="'+(ch?'card-pop':'')+'" style="border-radius:10px;padding:8px 7px 7px;cursor:pointer;position:relative;';
+      h+='border:1px solid '+(ch?'rgba(34,197,94,0.5)':'rgba(107,155,107,0.2)')+';';
+      h+='background:'+(ch?'linear-gradient(135deg,rgba(34,197,94,0.18),rgba(34,197,94,0.06))':'rgba(107,155,107,0.04)')+';';
+      h+='transition:all 0.2s'+(ch?';box-shadow:0 0 10px rgba(34,197,94,0.1)':'')+'">';
+      // Week badge / check
+      if(hw&&!ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:5px;color:#A78BFA;letter-spacing:0.5px">\u2713WK</div>';
+      if(ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:11px;color:#22C55E">\u2713</div>';
+      // Emoji + name + description
+      h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:5px">';
+      h+='<span style="font-size:16px;flex-shrink:0;width:20px;text-align:center;'+(ch?'':'opacity:0.45;filter:grayscale(0.3)')+'">'+f.emoji+'</span>';
+      h+='<div style="min-width:0">';
+      h+='<div style="font-size:10px;font-weight:600;color:'+(ch?'#86EFAC':'#9AAA9A')+';line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+f.name+'</div>';
+      h+='<div style="font-size:7px;color:'+(ch?'#6B9B6B':'#5A6A5A')+';line-height:1.3;margin-top:1px">'+f.sub+'</div>';
+      h+='</div></div>';
+      // Portion + info button — aligned with name via margin-left matching emoji width+gap
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-left:25px">';
+      h+='<div style="font-size:7px;color:'+(ch?'#5A8A5A':'#4A6A4A')+'">'+f.por+'</div>';
+      h+='<button onclick="event.stopPropagation();om('+idx+')" style="background:none;border:1px solid '+(ch?'rgba(107,155,107,0.3)':'rgba(107,155,107,0.15)')+';border-radius:50%;width:16px;height:16px;color:#6B9B6B;font-size:7px;display:flex;align-items:center;justify-content:center;font-family:inherit">i</button>';
+      h+='</div>';
       h+='</div>';
     });
     h+='</div>';
