@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Thrive37">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>Thrive37 — Eat smarter. Feel better. Live longer.</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Georgia,'Times New Roman',serif;background:linear-gradient(135deg,#0c1a0c 0%,#1a2e1a 40%,#0d1f15 100%);color:#E8F0E4;min-height:100vh;min-height:100dvh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(34,197,94,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(250,204,21,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(107,155,107,0.3);border-radius:4px}
+button{font-family:inherit;cursor:pointer}
+details>summary{list-style:none}details>summary::-webkit-details-marker{display:none}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.card-pop{animation:pop 0.2s ease}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const FOODS=[
+{id:"broccoli",name:"Broccoli",emoji:"🥦",sub:"Lightly steamed 3-4 min",fact:"Add mustard to restore sulforaphane after cooking",por:"½ cup cooked (80g)",min:"A few florets daily",res:"Sulforaphane activates the Nrf2 pathway — the body's master antioxidant defense. Cancer Prevention Research (2015): sulforaphane inhibits cancer cell growth. Steaming 3-4 min maximizes sulforaphane retention. Folate deficiency linked to 42% higher depression risk (J Psychiatric Research, 2017).",deep:"Sulforaphane activates 200+ protective genes and boosts glutathione — the body's primary antioxidant. Cooking destroys broccoli's myrosinase enzyme, but adding a pinch of mustard seed or powder after cooking restores sulforaphane production — mustard contains a heat-resistant form of the same enzyme (Mol. Nutr. Food Res., 2018). This works for all cooked cruciferous vegetables. Best prep: steam lightly, or chop raw and wait 40 min before cooking to let myrosinase activate.",nut:{vitC:68,vitK:58,folate:7,fiber:5}},
+{id:"kale",name:"Kale",emoji:"🥗",sub:"All varieties — massage raw",fact:"Among the most nutrient-dense foods per calorie",por:"1 handful raw or ½ cup cooked",min:"A handful several times/week",res:"Among the most nutrient-dense foods per calorie. British Journal of Nutrition (2016): cruciferous vegetables associated with lower all-cause mortality. Contains sulforaphane and indole-3-carbinol. Kaempferol and quercetin show anti-depressant effects (Neuroscience Letters, 2016).",deep:"High vitamin K content activates proteins that keep calcium in bones and out of arteries. Lutein and zeaxanthin protect against macular degeneration. Massage raw kale with olive oil to break tough cellulose. Red/purple varieties add anthocyanins. Like broccoli, adding mustard to cooked kale restores sulforaphane production.",nut:{vitK:340,vitA:103,vitC:67,manganese:13}},
+{id:"spinach",name:"Spinach",emoji:"🥬",sub:"Raw or cooked — add lemon",fact:"1 serving/day linked to 11 years younger brain",por:"1 handful raw or ½ cup cooked",min:"A handful most days",res:"Rush University Memory and Aging Project (Neurology, 2018): 1-2 servings of leafy greens daily associated with cognitive ability of someone 11 years younger. High nitrates improve vascular function. Rich magnesium source — linked to anti-depressant effects within 2 weeks (Nutrients, 2017).",deep:"Nitrates convert to nitric oxide, widening blood vessels and lowering blood pressure. Cooking increases iron and calcium bioavailability by reducing oxalates. Always pair with lemon/citrus for up to 6x better iron absorption. Contains ecdysteroids that may support muscle protein synthesis.",nut:{vitK:494,vitA:53,folate:33,iron:18,magnesium:20}},
+{id:"celery",name:"Celery",emoji:"🌿",sub:"Stalks and seeds",fact:"Apigenin: a researched natural anxiolytic",por:"2-3 stalks or 1 cup chopped",min:"A few stalks most days",res:"One of the richest food sources of apigenin — binds to benzodiazepine receptors in the brain (similar to anti-anxiety medication, without addiction risk). Upregulates BDNF, supports serotonin and dopamine (Frontiers in Pharmacology, 2024). Tufts study (Cell Reports, 2024): celery flavones identified as a metabolic marker associated with healthy aging.",deep:"Apigenin targets inflammation, neurotransmitters, BDNF, and autophagy simultaneously — potentially more effective than single-pathway approaches. Celery seed extract reduced anxiety and depression in hypertensive patients in a 4-week clinical study. Also contains 3-n-butylphthalide (3nB) which relaxes blood vessel smooth muscle.",nut:{vitK:30,folate:9,potassium:8,fiber:5}},
+{id:"fermented",name:"Fermented Foods",emoji:"🥛",sub:"Kefir, yogurt, kimchi, sauerkraut",fact:"Kefir: up to 61 probiotic strains",por:"1 glass kefir or ½ cup kimchi",min:"1 serving daily",res:"Stanford School of Medicine (Cell, 2021): fermented foods increased microbiome diversity and decreased 19 inflammatory markers — more effective than high-fiber diet alone. Probiotic-rich foods associated with reduced depression and anxiety symptoms (Nutritional Neuroscience, 2020). Kefir contains up to 61 different microbial strains.",deep:"95% of the body's serotonin is produced in the gut — gut health directly impacts mood and sleep via the serotonin-to-melatonin pathway. Kefir improves lactose digestion even in the lactose-intolerant. Homemade versions contain far more diverse organisms than commercial products. Kimchi adds anti-inflammatory benefits from garlic, ginger, and chili.",nut:{calcium:30,vitB12:20,protein:17,probiotics:100}},
+{id:"oats",name:"Oats",emoji:"🌾",sub:"Steel-cut or rolled",fact:"Beta-glucan lowers LDL cholesterol 5-10%",por:"½ cup dry (40g)",min:"½ cup daily for effect",res:"BMJ meta-analysis (Aune et al., 2016): whole grain intake associated with reduced cardiovascular disease, cancer, and all-cause mortality. Beta-glucan fiber reduces LDL cholesterol 5-10%. Supports mood via sustained blood glucose and prebiotic support for serotonin-producing gut bacteria (Appetite, 2016).",deep:"Contains avenanthramides — anti-inflammatory compounds rare in other foods. Overnight oats preserve resistant starch, which further benefits gut bacteria. Steel-cut oats have a lower glycemic index than rolled, but both are beneficial. Oats also contain melatonin, and their complex carbohydrates help tryptophan cross the blood-brain barrier — making an evening bowl a natural sleep supporter. Adding berries and nuts creates a synergistic meal.",nut:{manganese:63,fiber:16,protein:13,vitB1:25,magnesium:10}},
+{id:"fatty_fish",name:"Fatty Fish",emoji:"🐟",sub:"Salmon, mackerel, sardines, herring",fact:"Highest omega-3 levels linked to 2.2 extra years",por:"1 palm-sized fillet (120g)",min:"2+ servings per week",res:"Framingham Heart Study: participants with highest omega-3 index lived on average 2.2 years longer. Meta-analysis of 26 studies (Translational Psychiatry, 2019): EPA shows significant anti-depressant effects. Whole fish provides omega-3 in a form that appears more beneficial than supplements, likely due to the complete nutritional matrix.",deep:"EPA is anti-inflammatory and mood-supportive; DHA makes up 40% of brain fatty acids. Small oily fish (sardines, mackerel) are lower in mercury than large fish. Canned sardines with bones are an excellent calcium source. J Clinical Sleep Medicine (2014): eating fish 3x per week improved sleep quality, likely via vitamin D and omega-3 supporting serotonin regulation. Wild-caught generally has a better omega-3 to omega-6 ratio than farmed.",nut:{omega3:100,vitD:100,vitB12:100,selenium:80,protein:50}},
+{id:"liver",name:"Liver / Liver Pâté",emoji:"🫀",sub:"Pâté on bread, or pan-fried liver",fact:"1 slice of pâté = 150% daily B12",por:"20g liver pâté (1 slice on bread)",min:"Pâté on bread 3-4 days/week",res:"A single slice of liver pâté covers roughly 150% of daily B12 needs. Liver is among the most nutrient-concentrated foods available — pre-formed vitamin A, highly bioavailable B12, folate, iron, copper, and choline. Nutrients (2019): organ meats are notably dense in micronutrients. Choline supports brain function and mood regulation.",deep:"Liver pâté typically contains about one-third liver — a 20g serving provides meaningful B12 and vitamin A, though less than pure liver. For higher doses: chicken liver is mild and iron-rich, beef liver has the highest B12 and vitamin A concentration, and cod liver is an exceptional source of omega-3 and vitamin D. Heme iron in liver is 5-8x better absorbed than plant iron. Limit pure liver to 1-2 servings per week to avoid vitamin A accumulation. Choose pâté with minimal additives.",nut:{vitB12:150,vitA:50,folate:8,iron:5,copper:13,choline:7,selenium:5}},
+{id:"pumpkin_seeds",name:"Pumpkin Seeds",emoji:"🎃",sub:"Raw or lightly roasted",fact:"All 3 mood minerals in one food",por:"2 tablespoons (20g)",min:"A small handful most days",res:"Top plant source of all three 'mood minerals' simultaneously: magnesium, zinc, and tryptophan. Magnesium deficiency accelerates cellular aging (Magnesium Research, 2015). Tryptophan is the precursor to serotonin — associated with improved mood within weeks (Nutritional Neuroscience, 2015).",deep:"One of very few foods providing magnesium, zinc, AND tryptophan together — a natural mood support trio. Zinc alone supports 300+ enzymatic reactions in the body. The tryptophan content also supports sleep via the tryptophan → serotonin → melatonin pathway, and magnesium promotes muscle relaxation. A small evening handful may help with both mood and sleep quality. Great on oatmeal, salads, or as a snack.",nut:{magnesium:25,zinc:15,iron:10,protein:12,manganese:17}},
+{id:"ginger",name:"Ginger / Galangal",emoji:"🫚",sub:"Fresh root or ground",fact:"2g/day reduces blood sugar ~12%",por:"Thumb-sized piece or ½ tsp ground",min:"A small piece or pinch daily",res:"Comprehensive review (Food Science & Nutrition, 2019): significantly reduces C-reactive protein and TNF-alpha — key inflammatory markers. Metabolism (2012): 2g daily reduced fasting blood sugar by 12%. Gingerol directly modulates serotonin receptors (Bioorganic Chemistry, 2020).",deep:"Blocks COX-2 inflammation without the stomach damage associated with NSAIDs. Inhibits NF-κB — a master switch of chronic inflammation. Fresh ginger contains gingerols; dried/ground contains shogaols (both beneficial). Galangal (Thai ginger) contains galangin with similar anti-inflammatory properties. Excellent in tea, stir-fries, and soups.",nut:{manganese:2}},
+{id:"cinnamon",name:"Ceylon Cinnamon",emoji:"🟤",sub:"Ceylon type — not Cassia",fact:"1g/day linked to 18-29% blood sugar reduction",por:"A pinch to ½ tsp",min:"A pinch daily in food or drinks",res:"Meta-analysis (Journal of Medicinal Food, 2011): cinnamon reduces fasting glucose, total cholesterol, and LDL. Diabetes Care (2003): 1g daily reduced blood sugar 18-29% in type 2 diabetics. Has anti-depressant properties via serotonin and dopamine modulation.",deep:"Critical distinction: Cassia cinnamon contains ~1% coumarin (a liver toxin at high doses); Ceylon cinnamon contains only traces. If using daily, always choose Ceylon. Improves insulin sensitivity at the cellular level. Also has antimicrobial properties. A pinch in coffee, oatmeal, or smoothies is enough.",nut:{manganese:15}},
+{id:"shellfish",name:"Shellfish",emoji:"🦐",sub:"Shrimp, crab, lobster, oysters",fact:"6 oysters = ~500% daily zinc",por:"80-100g cooked",min:"1-2 servings per week",res:"Oysters are among the richest food sources of zinc. Shrimp contain astaxanthin — a carotenoid with strong antioxidant properties (Marine Drugs, 2014). Rich in B12, zinc, and selenium — all three support mood regulation (Nutritional Neuroscience, 2020).",deep:"Six oysters provide roughly 500% daily zinc, 200% B12, plus copper and selenium. Astaxanthin from shrimp crosses the blood-brain barrier, offering direct neuronal protection from oxidative damage. Frozen shrimp retains virtually all nutritional value. Shellfish are among the most nutrient-dense animal foods available.",nut:{vitB12:400,zinc:50,selenium:65,protein:40,iron:20,omega3:15}},
+{id:"mussels",name:"Mussels / Clams",emoji:"🦪",sub:"Blue mussels, clams, cockles",fact:"100g = one full week of B12",por:"100g cooked (~15 mussels)",min:"1-2 servings per week",res:"100g of mussels provides over 600% of daily B12 — enough for an entire week. Also 100% daily manganese, plus significant iron and selenium. European Journal of Clinical Nutrition (2019): regular bivalve consumption associated with improved cardiovascular markers. Low B12 is strongly linked to depression (Psychotherapy and Psychosomatics, 2013).",deep:"Among the most sustainable animal protein sources — mussels filter water, require no feed, and have a very low carbon footprint. Tinned and smoked mussels retain most nutrients. Clams are similarly nutrient-dense. Historically, coastal populations with regular bivalve consumption tend to show good health outcomes. An affordable nutritional powerhouse.",nut:{vitB12:600,iron:40,manganese:100,selenium:75,omega3:20,protein:25}},
+{id:"pineapple",name:"Pineapple",emoji:"🍍",sub:"Fresh — eat the core too",fact:"Contains serotonin directly",por:"A thick slice or ½ cup",min:"A few servings per week",res:"Rich in bromelain — an enzyme with anti-inflammatory effects comparable to NSAIDs (Biomedical Reports, 2016). One of few foods that contains serotonin directly. Higher tropical fruit intake associated with lower depression rates (Journal of Affective Disorders, 2020).",deep:"Bromelain is concentrated in the core — eat it for maximum benefit. Aids protein digestion, reduces post-exercise inflammation and swelling. Must be fresh — canning and pasteurization destroy bromelain. Also rich in manganese for bone health and antioxidant defense.",nut:{vitC:66,manganese:38,fiber:5}},
+{id:"citrus",name:"Citrus Fruits",emoji:"🍋",sub:"Lemon, orange, grapefruit, lime",fact:"Lemon on greens = 6x iron absorption",por:"Juice of ½ lemon or 1 orange",min:"Juice of ½ lemon daily",res:"BMJ (2017): citrus flavonoid intake associated with reduced cardiovascular disease, stroke, and mortality. Adding lemon to leafy greens boosts non-heme iron absorption up to 6x. Higher citrus consumption inversely associated with depression (European Journal of Clinical Nutrition, 2014).",deep:"Each citrus fruit has unique flavonoids: hesperidin (orange), naringenin (grapefruit), eriocitrin (lemon). Lemon zest contains d-limonene with anti-cancer properties. Vitamin C is essential for collagen synthesis, dopamine production, and iron absorption. Keep a lemon on the counter — squeeze on everything.",nut:{vitC:45,folate:5,fiber:6}},
+{id:"berries",name:"Berries",emoji:"🫐",sub:"Blueberries, blackberries, raspberries",fact:"2+ servings/week delays brain aging 2.5 years",por:"A handful (~75g)",min:"A handful most days (frozen works)",res:"Nurses' Health Study (Annals of Neurology, 2012): 2+ servings of berries per week delayed cognitive aging by 2.5 years. RCT (Nutrients, 2020): a blueberry drink improved mood within just 2 hours. Berry flavonoids directly increase BDNF — brain-derived neurotrophic factor.",deep:"Among the highest ORAC (antioxidant capacity) of common fruits. Frozen berries are equally nutritious — picked and frozen at peak ripeness. Wild and smaller berries contain more anthocyanins per gram. Berry fiber selectively feeds beneficial gut bacteria. Affordable year-round when frozen.",nut:{vitC:12,fiber:7,vitK:18,manganese:15}},
+{id:"olive_oil",name:"Extra Virgin Olive Oil",emoji:"🫒",sub:"Cold-pressed, peppery taste",fact:"½ tbsp/day linked to 19% lower mortality",por:"1-2 tablespoons",min:"At least ½ tablespoon daily",res:"PREDIMED trial (NEJM, 2018): Mediterranean diet with EVOO reduced cardiovascular events by 30%. Harvard study (JACC, 2022): more than ½ tablespoon daily associated with 19% lower all-cause mortality. Oleocanthal has anti-inflammatory properties similar to low-dose ibuprofen. Also associated with lower depression risk.",deep:"Quality EVOO should taste peppery or slightly bitter — that burning sensation in the throat IS the polyphenols working. Store in dark, cool place. Activates AMPK and sirtuins — longevity pathways. Always check harvest date and use within 18 months. Worth spending more on quality.",nut:{vitE:13,vitK:10,omega3:1}},
+{id:"beans",name:"Beans / Lentils",emoji:"🫘",sub:"Black, kidney, white, lentils",fact:"The most consistent longevity food in Blue Zones",por:"½ cup cooked (90g)",min:"½ cup most days",res:"The most consistently consumed food across all five Blue Zone longevity populations. Every 20g daily increase in legume intake associated with 7-8% lower mortality in epidemiological studies. Good source of folate and magnesium — deficiencies in both are linked to higher depression risk (British Journal of Nutrition, 2018).",deep:"Resistant starch in beans feeds gut bacteria that produce butyrate — a compound that supports the gut lining and reduces inflammation throughout the body. Soaking overnight reduces lectins and improves digestibility. Canned beans are nearly as nutritious as dried. Black beans have the highest antioxidant content among common varieties.",nut:{fiber:30,folate:45,iron:19,protein:18,manganese:20,magnesium:10}},
+{id:"chickpeas",name:"Chickpeas",emoji:"🧆",sub:"Hummus, roasted, or in stews",fact:"Best tryptophan-to-protein ratio among legumes",por:"½ cup cooked or 3 tbsp hummus",min:"A few servings per week",res:"High in tryptophan — the amino acid precursor to serotonin. RCT (Appetite, 2014): chickpea consumption significantly improved satiety and reduced snacking. Rich in B6 and folate for neurotransmitter synthesis. Mediterranean populations with regular chickpea intake show lower rates of anxiety and depression.",deep:"Best tryptophan-to-protein ratio among legumes — especially effective for mood when combined with carbohydrates. Hummus combines chickpeas + tahini + olive oil + lemon = a remarkably complete nutritional profile in one food. Roasted chickpeas make an excellent crunchy snack with sustained energy.",nut:{fiber:25,folate:35,manganese:42,protein:15,iron:13,zinc:9}},
+{id:"avocado",name:"Avocado",emoji:"🥑",sub:"Fresh, including dark green flesh",fact:"Boosts nutrient absorption 2-6x",por:"½ avocado",min:"2-3 times per week",res:"Journal of the American Heart Association (2022): 2+ avocados weekly associated with 16% lower cardiovascular disease and 21% lower coronary heart disease. Significantly improved microbiome diversity. Higher avocado consumption linked to lower depression scores (Nutritional Neuroscience, 2021).",deep:"Adding avocado to a meal increases absorption of carotenoids from other vegetables by 2-6x — it makes your salad more nutritious. Contains more potassium than bananas. Rich in glutathione — the body's master antioxidant. The dark green flesh closest to the skin contains the highest concentration of nutrients.",nut:{fiber:27,vitK:26,folate:20,potassium:14,vitE:14,vitB6:13}},
+{id:"sweet_potato",name:"Sweet Potato",emoji:"🍠",sub:"Baked or steamed with skin",fact:"The traditional staple of Okinawan centenarians",por:"1 small or ½ medium",min:"A few servings per week",res:"The traditional staple of Okinawa, Japan — one of the world's original Blue Zones with a high concentration of centenarians. Exceptionally rich in beta-carotene. Protects against oxidative DNA damage (Food Chemistry, 2019). Vitamin B6 supports serotonin and GABA production.",deep:"Okinawan centenarians historically got a large proportion of their calories from purple and orange sweet potatoes. Always eat with a small amount of fat for beta-carotene absorption. The skin contains concentrated fiber and antioxidants — eat it. Purple sweet potatoes add anthocyanins for additional brain benefits.",nut:{vitA:384,vitC:18,manganese:13,fiber:8,vitB6:8}},
+{id:"turmeric",name:"Turmeric",emoji:"🟡",sub:"Always with black pepper + fat",fact:"+2000% absorption with black pepper",por:"½ tsp ground (1-2g)",min:"A daily pinch + pepper + fat",res:"Geroscience (2024): curcumin modulates major longevity pathways — sirtuins, AMPK, and mTOR. Piperine from black pepper increases curcumin absorption by 2000%. Meta-analysis (Journal of Affective Disorders, 2017): curcumin reduces depression symptoms comparably to fluoxetine (Prozac).",deep:"The golden rule: ALWAYS combine with black pepper AND a fat source (olive oil, coconut oil). Without pepper, almost no curcumin reaches your bloodstream. Curcumin is both anti-inflammatory and pro-resolution — it helps resolve inflammation, not just suppress it. Fresh turmeric root can be grated like ginger.",nut:{manganese:13,iron:5}},
+{id:"nuts",name:"Nuts",emoji:"🥜",sub:"Walnuts, almonds, Brazil nuts, pistachios",fact:"5x/week linked to 39% lower mortality",por:"A small handful (20-30g)",min:"A handful at least 5 days/week",res:"Adventist Health Study-2: eating nuts 5+ times weekly associated with 39% lower all-cause mortality — one of the strongest dietary associations observed. Walnuts are richest in omega-3. Just 1-2 Brazil nuts provide a full day of selenium. Walnut consumers show 26% lower depression scores.",deep:"Each nut has unique strengths: walnuts for omega-3, almonds for vitamin E, Brazil nuts for selenium (limit 1-2 daily). Pistachios contain the highest natural melatonin concentration of any measured food — an evening handful may support sleep quality. Don't peel — the skins contain concentrated polyphenols. Raw or dry-roasted is best. Store in fridge/freezer to prevent omega-3 oxidation.",nut:{omega3:35,manganese:32,vitE:13,magnesium:13,fiber:5,protein:6}},
+{id:"tomatoes",name:"Cooked Tomatoes",emoji:"🍅",sub:"Sauce, paste, or roasted",fact:"Cooked with oil = 4x more lycopene absorbed",por:"½ cup sauce or paste",min:"Several times per week",res:"Primary dietary source of lycopene. Neurology (2012): men with highest lycopene levels had 55% lower stroke risk. Cooking with oil increases lycopene bioavailability by 4x. Journal of Affective Disorders (2013): tomato consumption associated with lower depression risk.",deep:"Heat converts trans-lycopene to the more bioavailable cis-form — raw tomatoes provide far less usable lycopene. Tomato paste is the most concentrated source. Canned tomatoes are excellent and often more nutritious than fresh (processed at peak ripeness). Lycopene specifically accumulates in prostate tissue, offering targeted protection.",nut:{vitC:14,vitA:13,potassium:6,lycopene:100}},
+{id:"carrots",name:"Carrots",emoji:"🥕",sub:"Cooked with fat for absorption",fact:"Cooked = 6.5x more beta-carotene absorbed",por:"1 medium or ½ cup cooked",min:"A few servings per week",res:"Richest commonly eaten source of beta-carotene. Higher blood carotenoid levels associated with lower all-cause mortality (Journal of Nutrition, 2014). Cooking increases beta-carotene absorption by 6.5x. Higher carotenoid intake linked to lower depression risk (Psychosomatic Medicine, 2012).",deep:"Cook carrots whole, then cut — this preserves 25% more nutrients than cutting before cooking. Beta-carotene converts to vitamin A on demand in the body, so there's no risk of toxicity (unlike pre-formed vitamin A). Purple and black heritage carrots add anthocyanins. Carrot tops are edible and nutritious in pesto or salads.",nut:{vitA:214,vitK:8,fiber:5}},
+{id:"garlic",name:"Garlic",emoji:"🧄",sub:"Crush → wait 10 min → then cook",fact:"The 10-minute rule changes everything",por:"1-2 cloves",min:"1 clove most days",res:"Meta-analysis (Journal of Nutrition, 2016): garlic supplementation significantly reduces total cholesterol, LDL, and blood pressure. Iowa Women's Health Study: highest garlic intake associated with reduced colon cancer risk. Aged garlic extract reduces perceived stress and fatigue (JNHA, 2019).",deep:"The 10-minute rule is critical: crushing garlic activates the enzyme alliinase, which converts alliin to beneficial allicin. If you heat garlic immediately after cutting, the enzyme is destroyed before it can work. Always crush or chop, wait 10 minutes, then cook. Black (fermented) garlic has even stronger antioxidant S-allyl cysteine. Also acts as a prebiotic for gut bacteria.",nut:{manganese:4,vitB6:3,vitC:3}},
+{id:"onion",name:"Onion",emoji:"🧅",sub:"Red onion is richest",fact:"Red onion: richest common source of quercetin",por:"A few slices or ¼ medium",min:"Regular in cooking",res:"Richest common food source of quercetin — a flavonoid that reduces chronic inflammation and oxidative stress (European Journal of Medicinal Chemistry, 2018). Quercetin shows anti-depressant effects via BDNF upregulation and serotonin modulation (Neuropharmacology, 2015).",deep:"Red onions contain 2-3x more quercetin than white, concentrated in the outer layers — don't over-peel. Quercetin is a natural antihistamine. Fructooligosaccharides (FOS) in onions are prebiotics that specifically feed beneficial Bifidobacteria. Sautéing preserves more quercetin than boiling (which leaches it into water).",nut:{vitC:6,quercetin:100}},
+{id:"herbs",name:"Fresh Herbs",emoji:"🌱",sub:"Parsley, basil, rosemary, oregano",fact:"Oregano: 42x the antioxidants of apples per gram",por:"A generous pinch to handful",min:"Use liberally every day",res:"Adding herbs to meals can reduce postprandial insulin response and blood lipids (American Journal of Clinical Nutrition, 2012). Rosemary's carnosic acid directly protects neurons from oxidative damage. Even the aroma of rosemary has been shown to improve mood and cognitive performance in controlled studies.",deep:"Oregano has 42x the antioxidant activity of apples per gram — even small amounts are meaningful. Parsley is rich in apigenin, the same compound that makes celery beneficial for anxiety and neurogenesis. A windowsill herb garden provides fresh herbs year-round for minimal cost. Dried herbs retain most antioxidant value.",nut:{vitK:100,vitC:10,iron:5}},
+{id:"eggs",name:"Eggs",emoji:"🥚",sub:"Whole eggs — the yolk is key",fact:"Top dietary source of choline",por:"1-2 eggs",min:"3-7 per week",res:"Top dietary source of choline — essential for brain function. BMJ (2018): study of 500,000 adults found daily egg consumption associated with 18% lower cardiovascular mortality. Choline converts to acetylcholine — the neurotransmitter for memory and mood. Vitamin D deficiency linked to 14% higher depression risk.",deep:"The yolk contains nearly all the nutrition — dietary cholesterol has minimal impact on blood cholesterol for most people. Pasture-raised eggs contain 2-3x more omega-3 fatty acids. Eggs have a perfect biological protein value of 100. Soft-boiled or poached preserves the most nutrients.",nut:{vitB12:23,selenium:28,vitD:6,protein:13,choline:30}},
+{id:"kiwi",name:"Kiwi",emoji:"🥝",sub:"Green or gold — try eating the skin",fact:"Measurable mood lift in just 4 days",por:"1 kiwi",min:"1 daily or most days",res:"Landmark RCT at University of Otago (British Journal of Nutrition, 2023): mood improvement was measurable within just 4 days of daily kiwi consumption — faster than any supplement tested. Contains direct serotonin. Vitamin C is essential for dopamine synthesis. Also significantly improves sleep quality: 2 kiwis 1 hour before bed reduced time to fall asleep by 42% and increased sleep duration by 13% (Asia Pacific Journal of Clinical Nutrition, 2011).",deep:"The 4-day mood effect likely comes from the synergy of serotonin + vitamin C + folate working together. The sleep benefits may be related to kiwi's serotonin content (a precursor to melatonin) and its high antioxidant concentration. The fuzzy skin is edible and triples the fiber content — rub off the fuzz and eat the whole fruit. Kiwi contains more vitamin C than an orange. Gold kiwis are sweeter with even higher vitamin C. Actinidin enzyme aids protein digestion.",nut:{vitC:137,vitK:37,fiber:8,potassium:5}},
+{id:"dark_chocolate",name:"Dark Chocolate 85%+",emoji:"🍫",sub:"85% cacao minimum",fact:"37% lower cardiovascular disease risk",por:"2-3 squares (15-20g)",min:"A small piece daily",res:"Tufts study (Cell Reports, 2024): salsolinol from chocolate identified as a metabolic marker associated with healthy aging. European Heart Journal (2011): highest chocolate intake associated with 37% lower cardiovascular disease.",deep:"85%+ cacao has 5x more flavanols and 4x less sugar than 50% chocolate — the cacao percentage matters considerably. Theobromine dilates blood vessels and improves cerebral blood flow. Contains compounds that support anandamide production — an endocannabinoid involved in mood regulation. Single-origin chocolate tends to maximise flavanol content. A daily square is a reasonable approach.",nut:{iron:13,magnesium:11,copper:17,manganese:18,fiber:8}},
+{id:"capers",name:"Capers",emoji:"🟢",sub:"Rinsed, in salads or on fish",fact:"Quercetin targets senescent cells (senolytics)",por:"1 tablespoon",min:"Use regularly as condiment",res:"One of the richest food sources of quercetin at 180mg per 100g. Quercetin is a senolytic compound — it selectively targets senescent cells that contribute to age-related inflammation (Nature Medicine, 2019). Shown to extend healthspan in animal models (Pharmacological Research, 2020). Also acts as a brain anti-inflammatory.",deep:"Senescent cells accumulate with age and secrete inflammatory compounds (SASP) that can damage surrounding tissue. Quercetin from capers has been shown to selectively clear these cells while leaving healthy cells intact in preclinical research. Small servings deliver meaningful quercetin due to the high concentration. Also contains rutin and kaempferol. Rinse salt-packed capers before use to reduce sodium.",nut:{vitK:10,quercetin:100}},
+{id:"green_tea",name:"Green Tea",emoji:"🍵",sub:"Brewed from leaves, not bags",fact:"5+ cups daily linked to 26% lower mortality",por:"1-3 cups",min:"At least 1 cup daily",res:"JAMA (2006): study of 40,000+ Japanese adults found 5+ cups daily associated with 26% lower all-cause mortality. EGCG supports autophagy — cellular maintenance and repair. L-theanine promotes calm, focused alertness via alpha brain waves (Nutrients, 2019).",deep:"L-theanine crosses the blood-brain barrier and promotes alpha brain waves — a state of calm focus similar to meditation. Brew at 70-80°C for 2-3 minutes (boiling water destroys catechins). Adding lemon juice preserves 5-12x more catechins through the acidic stomach. Matcha provides ~3x the EGCG of brewed green tea because you consume the whole leaf.",nut:{manganese:10,catechins:100,lTheanine:100}},
+{id:"mushrooms",name:"Mushrooms",emoji:"🍄‍🟫",sub:"Shiitake, maitake, oyster, button",fact:"Primary source of ergothioneine",por:"½ cup cooked",min:"3+ servings per week",res:"Meta-analysis covering 601,000 participants: regular mushroom consumption associated with lower all-cause mortality. Primary dietary source of ergothioneine — proposed as a 'longevity vitamin' by researcher Bruce Ames (PNAS, 2018). Japanese cohort study: eating mushrooms 3+ times weekly associated with substantially lower dementia risk. Penn State (2021): higher mushroom intake linked to reduced depression.",deep:"The human body has a dedicated transporter protein (OCTN1) specifically for ergothioneine — evolutionary evidence of its importance. Blood ergothioneine levels naturally decline after age 60, correlating with increased disease risk. Place mushrooms in sunlight for 30-60 minutes to dramatically increase their vitamin D content. Shiitake and maitake have the highest ergothioneine. Cooking does NOT destroy ergothioneine.",nut:{vitD:33,selenium:20,ergothioneine:100,copper:16}},
+{id:"saffron",name:"Saffron",emoji:"🧡",sub:"A few threads in food or warm milk",fact:"Comparable to SSRIs in trials, fewer side effects",por:"A pinch (~5 threads / 15-30mg)",min:"A pinch daily in food or drinks",res:"Meta-analysis of 11 RCTs: large effect size vs placebo for depression (p<0.001). Head-to-head trials show saffron performs comparably to fluoxetine, imipramine, and citalopram (Nutrition Reviews, 2025). 30mg daily for 6 weeks matched sertraline in elderly patients with major depressive disorder. World Federation of Biological Psychiatry: grade A evidence for saffron in treating unipolar depression.",deep:"Works through multiple pathways simultaneously: serotonin reuptake inhibition (similar to SSRIs), BDNF upregulation, and kynurenine pathway modulation (reducing neurotoxic metabolites). Trials consistently report fewer side effects compared to pharmaceutical antidepressants. Also shows benefits for sleep quality and anxiety in clinical studies — a 2021 RCT found improved sleep scores after 8 weeks. Use quality Iranian or Spanish saffron — cheap saffron is frequently adulterated with dyes. The colour should bleed slowly when steeped in warm liquid — instant colour suggests artificial dye.",nut:{manganese:3}},
+{id:"beetroot",name:"Beetroot",emoji:"🟣",sub:"Roasted, boiled, or juiced",fact:"Lowers blood pressure within hours",por:"1 small beet or ½ cup",min:"A few servings per week",res:"Rich in dietary nitrates that the body converts to nitric oxide — a potent vasodilator. Journal of Applied Physiology (2013): beetroot juice reduced blood pressure within hours and improved exercise endurance by 16%. Contains betalains — antioxidants found in very few other foods. European Journal of Clinical Nutrition (2021): regular beetroot consumption associated with lower cardiovascular mortality.",deep:"Nitric oxide from beetroot relaxes blood vessel walls, lowering blood pressure and improving oxygen delivery to muscles and brain. The red/purple pigments (betalains) are structurally different from anthocyanins found in berries — they provide independent anti-inflammatory effects. Raw or juiced preserves maximum nitrate content. Cooking reduces some nitrate but betalains survive heat. Also supports liver detoxification through phase 2 enzyme activation.",nut:{folate:20,manganese:16,potassium:11,fiber:9,vitC:8,iron:6}},
+{id:"pomegranate",name:"Pomegranate",emoji:"🔴",sub:"Seeds (arils) or pure juice",fact:"Urolithin A supports mitochondrial health",por:"½ pomegranate or ½ cup juice",min:"A few servings per week",res:"Contains punicalagins — polyphenols with strong antioxidant properties. Meta-analysis (Pharmacological Research, 2017): pomegranate reduces systolic blood pressure and inflammatory markers CRP and IL-6. Associated with improved memory in older adults (Evidence-Based Complementary Medicine, 2013). Urolithin A — a gut metabolite of pomegranate — activates mitophagy, the process of clearing damaged mitochondria.",deep:"Urolithin A is being studied as a potential compound for supporting cellular health, and pomegranate is the primary natural dietary source. Mitophagy — clearing dysfunctional mitochondria — is an important process for maintaining cellular energy production. Not everyone's gut bacteria can convert punicalagins to urolithin A initially, but regular consumption may support the development of a favourable microbiome. Clinical trials show pomegranate juice can reduce oxidized LDL. The seeds also provide fiber and punicic acid, a fatty acid with anti-inflammatory properties.",nut:{vitC:17,fiber:11,potassium:10,folate:10}}
+];
+
+const NI={vitC:{n:"Vitamin C",r:"90mg"},vitK:{n:"Vitamin K",r:"120\u03BCg"},vitA:{n:"Vitamin A",r:"900\u03BCg"},vitD:{n:"Vitamin D",r:"20\u03BCg"},vitE:{n:"Vitamin E",r:"15mg"},vitB6:{n:"Vitamin B6",r:"1.7mg"},vitB12:{n:"Vitamin B12",r:"2.4\u03BCg"},vitB1:{n:"Thiamin",r:"1.2mg"},folate:{n:"Folate",r:"400\u03BCg"},iron:{n:"Iron",r:"18mg"},calcium:{n:"Calcium",r:"1000mg"},magnesium:{n:"Magnesium",r:"420mg"},manganese:{n:"Manganese",r:"2.3mg"},potassium:{n:"Potassium",r:"4700mg"},selenium:{n:"Selenium",r:"55\u03BCg"},copper:{n:"Copper",r:"0.9mg"},zinc:{n:"Zinc",r:"11mg"},fiber:{n:"Fiber",r:"28g"},protein:{n:"Protein",r:"50g"},omega3:{n:"Omega-3",r:"1.6g ALA/500mg DHA+EPA"},choline:{n:"Choline",r:"550mg"},catechins:{n:"Catechins",r:"\u2014"},lTheanine:{n:"L-Theanine",r:"\u2014"},lycopene:{n:"Lycopene",r:"\u2014"},probiotics:{n:"Probiotics",r:"\u2014"},quercetin:{n:"Quercetin",r:"\u2014"},ergothioneine:{n:"Ergothioneine",r:"\u2014"}};
+
+const SYNERGIES=[
+{c:"Turmeric + Black Pepper + Fat",w:"Piperine boosts curcumin absorption 2000%. Fat enables cell membrane crossing. Golden milk (turmeric+pepper+coconut oil+warm milk) is the simplest way.",i:"\uD83D\uDFE1\u26AB\uD83E\uDED2"},
+{c:"Cooked Broccoli/Kale + Mustard",w:"Cooking destroys broccoli's myrosinase enzyme, preventing sulforaphane formation. Adding mustard seed or powder after cooking restores it \u2014 mustard's myrosinase is heat-resistant. Bioavailability increased 4x in human trial (Mol. Nutr. Food Res., 2018).",i:"\uD83E\uDD66\uD83D\uDFE1"},
+{c:"Cooked Tomatoes + Olive Oil",w:"Heat breaks cell walls releasing lycopene. Oil increases absorption 4x. Tomato sauce with EVOO is a longevity staple across the Mediterranean.",i:"\uD83C\uDF45\uD83E\uDED2"},
+{c:"Leafy Greens + Citrus",w:"Vitamin C converts non-heme plant iron to the absorbable ferrous form. Squeezing lemon on spinach increases iron absorption up to 6x.",i:"\uD83E\uDD6C\uD83C\uDF4B"},
+{c:"Carrots + Fat Source",w:"Beta-carotene is fat-soluble \u2014 absorption increases 6.5x when eaten with fat. Roast carrots in olive oil or add to a meal with avocado.",i:"\uD83E\uDD55\uD83E\uDED2"},
+{c:"Berries + Nuts",w:"Synergistic antioxidant protection \u2014 berry anthocyanins + nut polyphenols work through different pathways. The fats in walnuts also improve absorption of berry flavonoids.",i:"\uD83E\uDED0\uD83E\uDD5C"},
+{c:"Fatty Fish + Garlic",w:"Dual triglyceride reduction via different mechanisms \u2014 omega-3s reduce liver production while allicin increases clearance. Together more effective than either alone.",i:"\uD83D\uDC1F\uD83E\uDDC4"},
+{c:"Green Tea + Lemon",w:"Citric acid preserves catechins through the acidic stomach environment. 5-12x more EGCG reaches the intestine intact when tea is consumed with citrus.",i:"\uD83C\uDF75\uD83C\uDF4B"},
+{c:"Kiwi (daily habit)",w:"Mood improvement measurable within just 4 days in RCT. The synergy of direct serotonin + vitamin C (for dopamine synthesis) + folate is unique among fruits. Also supports sleep.",i:"\uD83E\uDD5D"},
+{c:"Fermented Food + Fiber",w:"Probiotics + prebiotics = synbiotic effect. The fiber feeds the beneficial bacteria you're introducing. Kefir + oats is a perfect morning combination.",i:"\uD83E\uDD5B\uD83C\uDF3E"},
+{c:"Dark Chocolate + Berries",w:"Combined flavanols (cacao) + anthocyanins (berries) provide enhanced vascular and cognitive support through complementary antioxidant pathways.",i:"\uD83C\uDF6B\uD83E\uDED0"},
+{c:"Mushrooms + Onions + Olive Oil",w:"Ergothioneine + quercetin + oleocanthal \u2014 three compounds from three kingdoms. The classic saut\u00E9ed mushroom base maximizes all three.",i:"\uD83C\uDF44\u200D\uD83D\uDFEB\uD83E\uDDC5\uD83E\uDED2"},
+{c:"Liver + Citrus",w:"Heme iron from liver is already highly bioavailable; vitamin C further enhances absorption and offsets oxidative stress from iron. Try lemon with liver p\u00E2t\u00E9.",i:"\uD83E\uDEC0\uD83C\uDF4B"},
+{c:"Beetroot + Leafy Greens",w:"Dual nitrate sources for maximum nitric oxide production. Together they provide more sustained vasodilation and blood pressure reduction than either alone.",i:"\uD83D\uDFE3\uD83E\uDD6C"},
+{c:"Saffron + Warm Milk/Fat",w:"Crocin and safranal are fat-soluble compounds. Warm milk or golden milk maximizes their absorption \u2014 also the traditional preparation across Persian and Indian cultures.",i:"\uD83E\uDDE1\uD83E\uDD5B"}
+];
+
+const T=FOODS.length,DAILY=10,WEEKLY=25;
+const gDK=d=>`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+const gMK=d=>`${d.getFullYear()}-${d.getMonth()+1}`;
+const gWS=d=>{const s=new Date(d);s.setDate(s.getDate()-((d.getDay()+6)%7));s.setHours(0,0,0,0);return s};
+const gWK=d=>gDK(gWS(d));
+const pDK=s=>{const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2])};
+
+let S={ck:{},wd:{},view:"board",modal:null,editDay:null,
+  records:{monthBadges:{},lastChecked:{}},milestone:null};
+
+function save(){try{localStorage.setItem("n37v4",JSON.stringify({v:4,wd:S.wd,records:S.records}))}catch(e){}}
+
+function load(){
+  try{
+    // Try v4 first, then migrate from v3
+    let d=JSON.parse(localStorage.getItem("n37v4"));
+    if(!d){d=JSON.parse(localStorage.getItem("lon37v3"))}
+    if(!d)return;
+    S.wd=d.wd||{};S.records=Object.assign(S.records,d.records||{});
+  }catch(e){}
+}
+
+function loadDayChecks(dayKey){
+  S.ck={};
+  Object.values(S.wd).forEach(function(days){if(days[dayKey])(days[dayKey]).forEach(function(id){S.ck[id]=true})});
+}
+
+function cleanOld(){
+  const cut=new Date();cut.setDate(cut.getDate()-400);
+  Object.keys(S.wd).forEach(function(wk){var d=pDK(wk);if(d<cut)delete S.wd[wk]});
+}
+
+load();cleanOld();loadDayChecks(gDK(new Date()));
+
+function getActiveDay(){return S.editDay||gDK(new Date())}
+
+function selectDay(dk){
+  var tk=gDK(new Date());
+  S.editDay=(dk===tk)?null:dk;
+  loadDayChecks(dk);render();
+}
+
+function toggle(id){
+  var today=new Date(),wk=gWK(today),day=getActiveDay();
+  S.ck[id]=!S.ck[id];if(!S.ck[id])delete S.ck[id];
+  if(!S.wd[wk])S.wd[wk]={};
+  S.wd[wk][day]=Object.keys(S.ck).filter(function(k){return S.ck[k]});
+  if(S.ck[id])S.records.lastChecked[id]=day;
+  // Badge — only upgrade, never downgrade
+  var mk=gMK(today),mc=getMF().size;
+  var cur=S.records.monthBadges[mk],lv={bronze:1,silver:2,gold:3};
+  var nw=mc>=T?'gold':mc>=30?'silver':mc>=25?'bronze':null;
+  if(nw&&(!cur||lv[nw]>lv[cur]))S.records.monthBadges[mk]=nw;
+  // Milestone popup
+  var wcNow=getWF().size;
+  var msKey=wk+'_'+wcNow;
+  var shown=S._msShown||{};
+  if(S.ck[id]&&(wcNow===WEEKLY||wcNow===T)&&!shown[msKey]){
+    shown[msKey]=true;S._msShown=shown;
+    S.milestone=wcNow===T?'perfect':'streak';
+  }
+  save();render();
+}
+
+function weekFoods(wk){var s=new Set(),d=S.wd[wk]||{};Object.values(d).forEach(function(a){a.forEach(function(f){s.add(f)})});return s}
+function getWF(){return weekFoods(gWK(new Date()))}
+function getMF(){
+  var today=new Date(),y=today.getFullYear(),m=today.getMonth(),mf=new Set();
+  Object.values(S.wd).forEach(function(days){Object.entries(days).forEach(function(e){var dk=e[0],foods=e[1];var p=dk.split('-').map(Number);if(p[0]===y&&p[1]===m+1)foods.forEach(function(f){mf.add(f)})})});
+  return mf;
+}
+function calcStreak(){
+  var streak=0,ws=new Date(gWS(new Date()));ws.setDate(ws.getDate()-7);
+  while(true){var wk=gDK(ws),wf=weekFoods(wk);if(!S.wd[wk]||wf.size<WEEKLY)break;streak++;ws.setDate(ws.getDate()-7)}
+  return streak;
+}
+function calcRolling52(){
+  var count=0,ws=new Date(gWS(new Date()));
+  // Go back 52 weeks
+  for(var i=1;i<=52;i++){
+    var d=new Date(ws);d.setDate(d.getDate()-7*i);
+    var wk=gDK(d),wf=weekFoods(wk);
+    if(S.wd[wk]&&wf.size>=WEEKLY)count++;
+  }
+  return count;
+}
+function calcYearHistory(){
+  var years={};
+  Object.entries(S.wd).forEach(function(e){
+    var wk=e[0],days=e[1];
+    var p=wk.split('-').map(Number);var y=p[0];
+    if(!years[y])years[y]={total:0,good:0};
+    years[y].total++;
+    var s=new Set();Object.values(days).forEach(function(a){a.forEach(function(f){s.add(f)})});
+    if(s.size>=WEEKLY)years[y].good++;
+  });
+  return years;
+}
+function prevWeek(){
+  var ws=new Date(gWS(new Date()));ws.setDate(ws.getDate()-7);
+  var wk=gDK(ws),d=S.wd[wk];if(!d)return null;
+  var s=new Set();Object.values(d).forEach(function(a){a.forEach(function(f){s.add(f)})});
+  return{count:s.size,ok:s.size>=WEEKLY,foods:s};
+}
+
+function sv(v){S.view=v;render()}
+function om(i){S.modal=i;render()}
+function cm(){S.modal=null;render()}
+
+// Share image
+function shareWeek(){
+  var c=document.createElement('canvas');c.width=540;c.height=540;
+  var x=c.getContext('2d');
+  // Background
+  var bg=x.createLinearGradient(0,0,540,540);bg.addColorStop(0,'#0c1a0c');bg.addColorStop(0.4,'#1a2e1a');bg.addColorStop(1,'#0d1f15');
+  x.fillStyle=bg;x.fillRect(0,0,540,540);
+  // Header
+  x.fillStyle='#6B9B6B';x.font='12px Georgia';x.textAlign='center';x.fillText('THRIVE37',270,40);
+  x.fillStyle='#86EFAC';x.font='28px Georgia';x.fillText('My Week',270,75);
+  // Week ring
+  var wc=getWF().size,pct=wc/T;
+  x.beginPath();x.arc(270,195,70,0,Math.PI*2);x.strokeStyle='#1a3a1a';x.lineWidth=8;x.stroke();
+  x.beginPath();x.arc(270,195,70,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(pct,1));x.strokeStyle='#A78BFA';x.lineWidth=8;x.lineCap='round';x.stroke();
+  x.fillStyle='#A78BFA';x.font='bold 42px Georgia';x.fillText(wc,270,205);
+  x.fillStyle='#6B9B6B';x.font='14px Georgia';x.fillText('/'+T+' foods',270,225);
+  // Stats
+  var streak=calcStreak(),roll=calcRolling52();
+  x.fillStyle='#F87171';x.font='18px Georgia';x.fillText('\uD83D\uDD25 '+streak+' week streak',270,300);
+  x.fillStyle='#A78BFA';x.font='16px Georgia';x.fillText('\uD83D\uDCC5 '+roll+'/52 weeks',270,330);
+  // Food grid
+  var checked=FOODS.filter(function(f){return getWF().has(f.id)});
+  var row=0,col=0,startX=50,startY=370;
+  x.font='20px serif';x.textAlign='left';
+  checked.forEach(function(f,i){
+    x.fillText(f.emoji,startX+col*42,startY+row*32);
+    col++;if(col>=11){col=0;row++}
+  });
+  // Footer
+  x.textAlign='center';x.fillStyle='#3A5A3A';x.font='11px Georgia';x.fillText('Eat smarter. Feel better. Live longer.',270,520);
+
+  c.toBlob(function(blob){
+    if(navigator.share&&navigator.canShare){
+      var file=new File([blob],'thrive37-week.png',{type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({files:[file],text:'My Thrive37 week: '+wc+'/'+T+' foods! \uD83C\uDF3F'}).catch(function(){});return;
+      }
+    }
+    // Fallback: download
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='thrive37-week.png';a.click();
+  },'image/png');
+}
+
+function dismissMS(){S.milestone=null;render()}
+
+// Midnight refresh
+(function sched(){var n=new Date(),m=new Date(n);m.setDate(m.getDate()+1);m.setHours(0,0,1,0);setTimeout(function(){S.editDay=null;loadDayChecks(gDK(new Date()));render();sched()},m-n)})();
+
+// Onboarding
+function isOB(){return localStorage.getItem("n37_ob")==="1"}
+function finishOB(){localStorage.setItem("n37_ob","1");render()}
+
+function render(){
+  var today=new Date(),tk=gDK(today),wk=gWK(today),mk=gMK(today);
+  var ad=getActiveDay(),ep=S.editDay&&S.editDay!==tk;
+  var tc=Object.values(S.ck).filter(Boolean).length;
+  var wf=getWF(),wc=wf.size,mf=getMF(),mc=mf.size;
+  var ws=gWS(today),wds=[];
+  for(var wi=0;wi<7;wi++){var wd=new Date(ws);wd.setDate(wd.getDate()+wi);wds.push(wd)}
+  var dn=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  var wkd=S.wd[wk]||{};
+  var tn={};FOODS.forEach(function(f){if(S.ck[f.id])Object.entries(f.nut).forEach(function(e){tn[e[0]]=(tn[e[0]]||0)+e[1]})});
+  var streak=calcStreak(),roll52=calcRolling52();
+  var badge=S.records.monthBadges[mk];
+  var bi=badge==='gold'?'\uD83E\uDD47':badge==='silver'?'\uD83E\uDD48':badge==='bronze'?'\uD83E\uDD49':'';
+  var mn=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var tdc=ep?((wkd[tk]||[]).length):tc;
+  var pw=prevWeek();
+
+  // ========== ONBOARDING ==========
+  if(!isOB()){
+    var slides=[
+      {e:"\uD83C\uDF89",t:"Welcome to Thrive37!",sub:"Your daily boost starts here.",d:"37 foods. All backed by real research. Each one chosen because it helps you <b>live longer</b> and <b>feel genuinely great</b>."},
+      {e:"\uD83D\uDE80",t:"Super simple.",sub:"Check off what you eat.",d:"Log daily or catch up on Sunday \u2014 whatever works for you. Hit <b>25+ unique foods per week</b> and watch your streak grow!"},
+      {e:"\u2728",t:"Get smarter every day.",sub:"Science you'll actually enjoy reading.",d:"Discover surprising food synergies, track your nutrients, and learn what makes each food a powerhouse."}
+    ];
+    var h='<div style="position:fixed;inset:0;background:#070f07;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px">';
+    h+='<div style="position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,rgba(34,197,94,0.08) 0%,transparent 70%);pointer-events:none"></div>';
+    h+='<div id="ob" style="text-align:center;max-width:320px;position:relative;z-index:1">';
+    slides.forEach(function(s,i){
+      h+='<div id="obs'+i+'" style="display:'+(i===0?'block':'none')+'">';
+      h+='<div style="font-size:72px;margin-bottom:20px;filter:brightness(1.1)">'+s.e+'</div>';
+      h+='<h2 style="font-size:28px;color:#E8F0E4;margin:0;font-weight:400;letter-spacing:-0.5px">'+s.t+'</h2>';
+      h+='<div style="font-size:15px;color:#22C55E;margin:4px 0 16px;font-weight:400">'+s.sub+'</div>';
+      h+='<p style="font-size:13px;color:#7A9B7A;line-height:1.8;margin-bottom:30px">'+s.d+'</p>';
+      h+='<div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px">';
+      for(var j=0;j<3;j++)h+='<div style="width:'+(j===i?'24px':'8px')+';height:4px;border-radius:2px;background:'+(j===i?'#22C55E':'rgba(107,155,107,0.2)')+';transition:all 0.3s"></div>';
+      h+='</div>';
+      var nxt=i<2?"document.getElementById('obs"+i+"').style.display='none';document.getElementById('obs"+(i+1)+"').style.display='block'":"finishOB()";
+      h+='<button onclick="'+nxt+'" style="padding:12px 36px;border-radius:8px;border:none;background:'+(i<2?'rgba(34,197,94,0.12)':'#22C55E')+';color:'+(i<2?'#86EFAC':'#070f07')+';font-size:14px;font-family:inherit;font-weight:'+(i===2?'bold':'normal')+';letter-spacing:0.5px">'+(i<2?'Next':'Start')+'</button>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+    document.getElementById("app").innerHTML=h;return;
+  }
+
+  // ========== MAIN APP ==========
+  var h='';
+
+  // Header
+  h+='<div style="padding:18px 16px 6px;text-align:center;position:relative;z-index:1">';
+  h+='<div style="font-size:7px;letter-spacing:4px;color:#6B9B6B">THRIVE37</div>';
+  h+='<h1 style="font-size:clamp(20px,5vw,30px);font-weight:400;background:linear-gradient(to right,#86EFAC,#FDE68A,#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:2px 0">Thrive 37</h1>';
+  h+='<p style="font-size:9px;color:#7A9B7A;font-style:italic">Eat smarter. Feel better. Live longer.</p>';
+  h+='<p style="font-size:6.5px;color:#3A5A3A;margin-top:4px;letter-spacing:0.5px">Developed by Bendik Wanvik</p>';
+  h+='</div>';
+
+  // Welcome message
+  var greet='';
+  var dow=today.getDay(),left=WEEKLY-wc;
+  // Check days since last log
+  var daysSince=99;
+  for(var li=1;li<=7;li++){var ld=new Date(today);ld.setDate(ld.getDate()-li);var ldk=gDK(ld);var found=false;Object.values(S.wd).forEach(function(days){if(days[ldk]&&days[ldk].length>0)found=true});if(found){daysSince=li;break}}
+
+  if(wc>=T)greet='\u2728 Perfect week! All '+T+' foods!';
+  else if(wc>=WEEKLY&&dow>=5)greet='\uD83D\uDD25 Streak secured! '+wc+'/'+T+' — keep adding!';
+  else if(left===1)greet='\uD83C\uDFAF One more for your streak!';
+  else if(left<=5&&left>1)greet='\uD83D\uDCAA Almost there — just '+left+' more for 25!';
+  else if(daysSince>=3&&tc===0)greet='\uD83D\uDC4B Welcome back! Tap any day to fill in your week';
+  else if(dow<=1&&tc===0)greet='\uD83C\uDF1F Fresh week! Let\u2019s go';
+  else if(wc>=15)greet='\uD83D\uDE80 '+wc+'/'+T+' so far — great momentum!';
+  else if(wc>=8)greet='\uD83C\uDF31 '+wc+'/'+T+' this week — building nicely';
+  else greet='\uD83D\uDC4B '+wc+'/'+T+' so far — every food counts!';
+  h+='<div style="text-align:center;padding:0 16px 6px;position:relative;z-index:1"><div style="font-size:10px;color:#C4DCC4;padding:4px 14px;display:inline-block;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.1);border-radius:16px">'+greet+'</div></div>';
+
+  // Rings — week is central and larger
+  h+='<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:0 16px 4px;position:relative;z-index:1">';
+  // Today ring (small left)
+  var tProg=Math.min(tdc/DAILY,1)*101;
+  h+='<div style="text-align:center"><div style="position:relative;width:42px;height:42px;margin:0 auto"><svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="16" fill="none" stroke="#1a3a1a" stroke-width="3"/><circle cx="23" cy="23" r="16" fill="none" stroke="#22C55E" stroke-width="3" stroke-dasharray="'+tProg+' 101" stroke-linecap="round" transform="rotate(-90 23 23)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:#22C55E">'+tdc+'</div></div><div style="font-size:5.5px;color:#6B9B6B;margin-top:1px;letter-spacing:1px">TODAY</div><div style="font-size:6px;color:#22C55E">'+(tdc>=DAILY?'\u2713 Goal!':(DAILY-tdc)+' more')+'</div></div>';
+  // Week ring (big center)
+  var wProg=Math.min(wc/T,1)*201;var w25=(WEEKLY/T)*201;
+  h+='<div style="text-align:center;margin:0 4px"><div style="position:relative;width:80px;height:80px;margin:0 auto"><svg width="80" height="80" viewBox="0 0 84 84"><circle cx="42" cy="42" r="32" fill="none" stroke="#1a3a1a" stroke-width="4.5"/><circle cx="42" cy="42" r="32" fill="none" stroke="#A78BFA" stroke-width="4.5" stroke-dasharray="'+wProg+' 201" stroke-linecap="round" transform="rotate(-90 42 42)"/><circle cx="42" cy="42" r="32" fill="none" stroke="rgba(250,204,21,0.18)" stroke-width="1.5" stroke-dasharray="'+w25+' 201" stroke-linecap="round" transform="rotate(-90 42 42)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)"><div style="font-size:22px;font-weight:bold;color:#A78BFA;line-height:1">'+wc+'<span style="font-size:10px;color:#6B9B6B">/'+T+'</span></div><div style="font-size:6px;color:#6B9B6B;margin-top:-1px">THIS WEEK</div></div></div><div style="font-size:6.5px;color:#A78BFA;margin-top:1px">'+(wc>=WEEKLY?'\u2605 Streak!':Math.max(WEEKLY-wc,0)+' to 25')+'</div></div>';
+  // Month ring (small right)
+  var mProg=Math.min(mc/T,1)*101;
+  h+='<div style="text-align:center"><div style="position:relative;width:42px;height:42px;margin:0 auto"><svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="16" fill="none" stroke="#1a3a1a" stroke-width="3"/><circle cx="23" cy="23" r="16" fill="none" stroke="#F59E0B" stroke-width="3" stroke-dasharray="'+mProg+' 101" stroke-linecap="round" transform="rotate(-90 23 23)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:#F59E0B">'+mc+'</div></div><div style="font-size:5.5px;color:#6B9B6B;margin-top:1px;letter-spacing:1px">'+mn[today.getMonth()].toUpperCase()+'</div><div style="font-size:6px;color:#F59E0B">'+(mc>=T?'\uD83E\uDD47 All!':T-mc+' to go')+'</div></div>';
+  h+='</div>';
+
+  // Stats bar
+  h+='<div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:2px 16px 4px;position:relative;z-index:1;font-size:8px">';
+  h+='<span style="color:#F87171">\uD83D\uDD25 '+streak+' week'+(streak!==1?'s':'')+'</span>';
+  h+='<span style="color:#A78BFA">\uD83D\uDCC5 '+roll52+'/52 weeks</span>';
+  if(bi)h+='<span>'+bi+' '+mn[today.getMonth()]+'</span>';
+  h+='<button onclick="shareWeek()" style="background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:2px 8px;font-size:8px;color:#A78BFA;font-family:inherit;display:flex;align-items:center;gap:3px">\uD83D\uDCE4 Share</button>';
+  h+='</div>';
+
+  // Previous week
+  if(pw){
+    h+='<div style="text-align:center;padding:1px 16px 3px;position:relative;z-index:1"><div style="display:inline-block;font-size:7.5px;padding:2px 10px;border-radius:10px;background:'+(pw.ok?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.06)')+';border:1px solid '+(pw.ok?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.1)')+';color:'+(pw.ok?'#86EFAC':'#F87171')+'">Last week: '+pw.count+'/'+T+' '+(pw.ok?'\u2713':'')+'</div></div>';
+  }
+
+  // Week strip
+  h+='<div style="display:flex;justify-content:center;gap:3px;padding:2px 12px 2px;position:relative;z-index:1">';
+  wds.forEach(function(d,i){
+    var dk=gDK(d),df=(wkd[dk]||[]).length,isT=dk===tk,fu=d>today,isA=dk===ad;
+    h+='<div '+((!fu)?('onclick="selectDay(\''+dk+'\')"'):'')+' style="width:33px;text-align:center;opacity:'+(fu?0.3:1)+';'+(!fu?'cursor:pointer':'')+'"><div style="font-size:6.5px;color:#6B9B6B;letter-spacing:1px">'+dn[i]+'</div><div style="width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:1px auto;font-size:8.5px;font-weight:'+(isA?'bold':'normal')+';background:'+(isA?'rgba(34,197,94,0.25)':df>=10?'rgba(34,197,94,0.1)':'transparent')+';border:'+(isA?'2px solid #22C55E':isT?'1.5px solid rgba(34,197,94,0.4)':df>=10?'1px solid rgba(34,197,94,0.3)':'1px solid rgba(107,155,107,0.12)')+';color:'+(isA?'#22C55E':df>=10?'#86EFAC':'#7A9B7A')+'">'+d.getDate()+'</div>'+(!fu?'<div style="font-size:6.5px;color:'+(df>=10?'#22C55E':'#6B9B6B')+'">'+(df>0?df:'\u00B7')+'</div>':'')+'</div>';
+  });
+  h+='</div>';
+
+  // Edit banner
+  if(ep){
+    var pp=ad.split('-').map(Number),ed=new Date(pp[0],pp[1]-1,pp[2]),dN=dn[(ed.getDay()+6)%7];
+    h+='<div style="text-align:center;padding:3px 16px;z-index:1;position:relative"><div style="display:inline-flex;align-items:center;gap:6px;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.2);border-radius:16px;padding:3px 10px"><span style="font-size:8px;color:#FDE68A">\u270F\uFE0F '+dN+' '+pp[2]+'/'+pp[1]+'</span><button onclick="selectDay(\''+tk+'\')" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:2px 7px;font-size:7px;color:#86EFAC;font-family:inherit">\u2190 Today</button></div></div>';
+  }
+
+  // Nav
+  var views=[{id:"board",l:"Foods"},{id:"rda",l:"Nutrients"},{id:"science",l:"Science"},{id:"stats",l:"Progress"}];
+  h+='<div style="display:flex;justify-content:center;gap:0;padding:5px 12px 6px;position:relative;z-index:1">';
+  views.forEach(function(v,i){
+    h+='<button onclick="sv(\''+v.id+'\')" style="padding:4px 10px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid '+(S.view===v.id?'#22C55E':'rgba(107,155,107,0.2)')+';color:'+(S.view===v.id?'#86EFAC':'#6B9B6B')+';background:'+(S.view===v.id?'rgba(34,197,94,0.15)':'transparent')+';border-radius:'+(i===0?'16px 0 0 16px':i===3?'0 16px 16px 0':'0')+';font-family:inherit">'+v.l+'</button>';
+  });
+  h+='</div><div style="padding:0 8px 100px;position:relative;z-index:1">';
+
+  // ========== FOODS TAB ==========
+  if(S.view==="board"){
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;max-width:920px;margin:0 auto">';
+    FOODS.forEach(function(f,idx){
+      var ch=!!S.ck[f.id],hw=wf.has(f.id);
+      h+='<div onclick="toggle(\''+f.id+'\')" class="'+(ch?'card-pop':'')+'" style="border-radius:10px;padding:8px 9px;cursor:pointer;position:relative;border:1px solid '+(ch?'rgba(34,197,94,0.5)':'rgba(107,155,107,0.08)')+';background:'+(ch?'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.08))':'rgba(255,255,255,0.02)')+';transition:all 0.2s'+(ch?';box-shadow:0 0 12px rgba(34,197,94,0.08)':'')+';">';
+      if(hw&&!ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:5px;color:#A78BFA;letter-spacing:1px">\u2713 WK</div>';
+      if(ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:12px;color:#22C55E">\u2713</div>';
+      h+='<div style="display:flex;align-items:center;gap:6px"><span style="font-size:18px;'+(ch?'':'opacity:0.5;filter:grayscale(0.4)')+'">'+f.emoji+'</span><div style="min-width:0"><div style="font-size:12px;font-weight:bold;color:'+(ch?'#86EFAC':'#8A9A8A')+';line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+f.name+'</div><div style="font-size:8px;color:'+(ch?'#6B9B6B':'#4A6A4A')+';line-height:1.2;margin-top:1px">'+f.sub+'</div></div></div>';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;padding-left:32px"><div style="font-size:8px;color:'+(ch?'#5A8A5A':'#3A5A3A')+'">'+f.por+'</div><button onclick="event.stopPropagation();om('+idx+')" style="background:none;border:1px solid '+(ch?'rgba(107,155,107,0.3)':'rgba(107,155,107,0.15)')+';border-radius:50%;width:18px;height:18px;color:#6B9B6B;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:inherit">i</button></div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // ========== NUTRIENTS TAB ==========
+  if(S.view==="rda"){
+    var lb=ep?tc+' foods (editing)':tc+' food'+(tc!==1?'s':'')+' today';
+    h+='<div style="max-width:600px;margin:0 auto"><div style="text-align:center;margin-bottom:10px;padding:8px;background:rgba(34,197,94,0.08);border-radius:10px;border:1px solid rgba(34,197,94,0.15)"><div style="font-size:10px;color:#86EFAC">'+lb+'</div><div style="font-size:7px;color:#6B9B6B;margin-top:1px">Approximate % Daily Value per serving</div></div>';
+    var so=Object.entries(tn).sort(function(a,b){return b[1]-a[1]});
+    so.forEach(function(e){var k=e[0],p=e[1];var n=NI[k];if(!n)return;var c=p>=100?'#22C55E':p>=50?'#FDE68A':'#F87171';
+    h+='<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;margin-bottom:1px;font-size:9px"><span style="color:#C4DCC4">'+n.n+'</span><span style="color:'+c+'">'+Math.round(p)+'%'+(n.r!=='\u2014'?' of '+n.r:'')+'</span></div><div style="height:4px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+Math.min(p/3,100)+'%;background:'+c+';border-radius:3px"></div></div></div>'});
+    if(!tc)h+='<div style="text-align:center;padding:30px 0;color:#5A8A5A"><div style="font-size:26px;margin-bottom:6px">\uD83C\uDF31</div><div style="font-size:10px">Check off foods to see nutrients</div></div>';
+    h+='</div>';
+  }
+
+  // ========== SCIENCE TAB ==========
+  if(S.view==="science"){
+    h+='<div style="max-width:650px;margin:0 auto">';
+    // Individual foods FIRST
+    h+='<div style="font-size:10px;color:#6B9B6B;letter-spacing:1px;margin-bottom:6px;text-align:center">\uD83E\uDDEC DEEPER SCIENCE \u2014 TAP TO EXPAND</div>';
+    FOODS.forEach(function(f){
+      h+='<details style="margin-bottom:4px"><summary style="cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid rgba(107,155,107,0.08);border-radius:7px;padding:8px 10px;font-size:12px;color:#C4DCC4;display:flex;align-items:center;gap:6px"><span style="font-size:15px">'+f.emoji+'</span><span style="flex:1"><b>'+f.name+'</b> <span style="color:#B4A468;font-size:9px;font-style:italic">'+f.fact+'</span></span><span style="font-size:9px;color:#6B9B6B">\u25B8</span></summary><div style="padding:10px 14px;border-left:2px solid rgba(34,197,94,0.15);margin:3px 0 0 20px"><p style="font-size:11px;color:#86EFAC;line-height:1.6;margin:0 0 8px">'+f.res+'</p><p style="font-size:11px;color:#8AAB8A;line-height:1.6;margin:0">'+f.deep+'</p></div></details>';
+    });
+    // Synergies SECOND
+    h+='<div style="font-size:10px;color:#B4A468;letter-spacing:1px;margin:16px 0 6px;text-align:center">\uD83D\uDD2C FOOD SYNERGIES \u2014 COMBINATIONS THAT MULTIPLY BENEFITS</div>';
+    SYNERGIES.forEach(function(s){
+      h+='<div style="background:rgba(250,204,21,0.04);border:1px solid rgba(250,204,21,0.08);border-radius:9px;padding:9px 11px;margin-bottom:5px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-size:14px">'+s.i+'</span><span style="font-size:12px;font-weight:bold;color:#D4C48A">'+s.c+'</span></div><div style="font-size:11px;color:#A4A47A;line-height:1.5">'+s.w+'</div></div>';
+    });
+    h+='</div>';
+  }
+
+  // ========== PROGRESS TAB ==========
+  if(S.view==="stats"){
+    h+='<div style="max-width:520px;margin:0 auto">';
+    // Share button
+    h+='<button onclick="shareWeek()" style="width:100%;padding:10px;margin-bottom:10px;background:linear-gradient(135deg,rgba(167,139,250,0.12),rgba(34,197,94,0.08));border:1px solid rgba(167,139,250,0.25);border-radius:10px;color:#C4DCC4;font-size:10px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font-size:16px">\uD83D\uDCE4</span> Share your week</button>';
+    // Streak + Rolling year
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
+    h+='<div style="text-align:center;padding:12px;background:rgba(239,68,68,0.06);border-radius:10px;border:1px solid rgba(239,68,68,0.1)"><div style="font-size:28px">\uD83D\uDD25</div><div style="font-size:20px;font-weight:bold;color:#F87171">'+streak+'</div><div style="font-size:7px;color:#6B9B6B;margin-top:1px">Week streak</div></div>';
+    h+='<div style="text-align:center;padding:12px;background:rgba(167,139,250,0.06);border-radius:10px;border:1px solid rgba(167,139,250,0.1)"><div style="font-size:28px">\uD83D\uDCC5</div><div style="font-size:20px;font-weight:bold;color:#A78BFA">'+roll52+'<span style="font-size:11px;color:#6B9B6B">/52</span></div><div style="font-size:7px;color:#6B9B6B;margin-top:1px">Last 52 weeks</div></div>';
+    h+='</div>';
+    // Previous week
+    if(pw){
+      h+='<div style="background:'+(pw.ok?'rgba(34,197,94,0.05)':'rgba(239,68,68,0.04)')+';border-radius:9px;padding:10px;border:1px solid '+(pw.ok?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.08)')+';margin-bottom:10px"><div style="font-size:8px;color:#6B9B6B;letter-spacing:1px;margin-bottom:4px">LAST WEEK</div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">'+(pw.ok?'\u2705':'\u26A0\uFE0F')+'</span><span style="font-size:12px;color:'+(pw.ok?'#86EFAC':'#F87171')+';font-weight:bold">'+pw.count+' / '+T+' unique foods</span></div>';
+      if(!pw.ok){var m=FOODS.filter(function(f){return !pw.foods.has(f.id)});h+='<div style="margin-top:5px;font-size:8px;color:#6B9B6B">Missed: '+m.slice(0,10).map(function(f){return f.emoji+' '+f.name}).join(', ')+(m.length>10?' +more':'')+'</div>'}
+      h+='</div>';
+    }
+    // Year history
+    var yh=calcYearHistory(),yrs=Object.keys(yh).sort().reverse();
+    if(yrs.length){
+      h+='<div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:10px;border:1px solid rgba(107,155,107,0.08);margin-bottom:10px"><div style="font-size:8px;color:#6B9B6B;letter-spacing:1px;margin-bottom:4px">YEAR HISTORY</div>';
+      yrs.forEach(function(y){var d=yh[y];h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:#C4DCC4;width:36px">'+y+'</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+(d.good/52*100)+'%;background:linear-gradient(to right,#A78BFA,#86EFAC);border-radius:4px"></div></div><span style="font-size:9px;color:#A78BFA;width:44px;text-align:right">'+d.good+'/'+d.total+'</span></div>'});
+      h+='</div>';
+    }
+    // Month badge
+    h+='<div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:10px;border:1px solid rgba(107,155,107,0.08);margin-bottom:10px"><div style="font-size:8px;color:#6B9B6B;letter-spacing:1px;margin-bottom:4px">'+mn[today.getMonth()].toUpperCase()+' \u2014 '+mc+'/'+T+' UNIQUE FOODS</div><div style="height:6px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;margin-bottom:3px"><div style="height:100%;width:'+(mc/T*100)+'%;background:linear-gradient(to right,#F59E0B,#FDE68A);border-radius:4px"></div></div><div style="display:flex;justify-content:space-between;font-size:6.5px;color:#6B9B6B"><span>\uD83E\uDD49 25</span><span>\uD83E\uDD48 30</span><span>\uD83E\uDD47 '+T+'</span></div></div>';
+    // Week coverage
+    h+='<div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:10px;border:1px solid rgba(107,155,107,0.08);margin-bottom:10px"><div style="font-size:8px;color:#6B9B6B;letter-spacing:1px;margin-bottom:4px">THIS WEEK \u2014 '+wc+'/'+T+'</div><div style="display:flex;flex-wrap:wrap;gap:2px">';
+    FOODS.forEach(function(f){var hit=wf.has(f.id);h+='<span style="padding:1px 5px;border-radius:10px;font-size:7px;border:1px solid '+(hit?'rgba(34,197,94,0.3)':'rgba(107,155,107,0.06)')+';background:'+(hit?'rgba(34,197,94,0.12)':'rgba(255,255,255,0.02)')+';color:'+(hit?'#86EFAC':'#4A6A4A')+'">'+f.emoji+f.name+'</span>'});
+    h+='</div></div>';
+    // Forgotten
+    var fg=FOODS.map(function(f){var l=S.records.lastChecked[f.id];if(!l)return{f:f,d:999};var p=l.split('-').map(Number);return{f:f,d:Math.floor((today-new Date(p[0],p[1]-1,p[2]))/864e5)}}).filter(function(x){return x.d>0&&!S.ck[x.f.id]}).sort(function(a,b){return b.d-a.d});
+    if(fg.length){
+      h+='<div style="background:rgba(239,68,68,0.04);border-radius:9px;padding:10px;border:1px solid rgba(239,68,68,0.08);margin-bottom:10px"><div style="font-size:8px;color:#F87171;letter-spacing:1px;margin-bottom:4px">\u23F0 LONGEST SINCE LAST EATEN</div>';
+      fg.slice(0,10).forEach(function(x){h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;font-size:9px"><span style="font-size:12px">'+x.f.emoji+'</span><span style="color:#C4DCC4;flex:1">'+x.f.name+'</span><span style="color:#F87171;font-size:8px">'+(x.d===999?'Never':x.d+'d ago')+'</span></div>'});
+      h+='</div>';
+    }
+    // Missing this week
+    var miss=FOODS.filter(function(f){return !wf.has(f.id)});
+    h+='<div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:10px;border:1px solid rgba(107,155,107,0.08)"><div style="font-size:8px;color:#6B9B6B;letter-spacing:1px;margin-bottom:4px">MISSING THIS WEEK ('+miss.length+')</div>';
+    if(!miss.length)h+='<div style="font-size:10px;color:#22C55E;text-align:center;padding:6px">\u2605 Perfect week! All '+T+'! \u2605</div>';
+    else miss.forEach(function(f){h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;font-size:9px"><span style="font-size:12px">'+f.emoji+'</span><span style="color:#C4DCC4">'+f.name+'</span><span style="font-size:7px;color:#6B9B6B;margin-left:auto">'+f.min+'</span></div>'});
+    h+='</div></div>';
+  }
+  h+='</div>';
+
+  // ========== MILESTONE POPUP ==========
+  if(S.milestone){
+    var isPerfect=S.milestone==='perfect';
+    var msEmoji=isPerfect?'\uD83C\uDF89':'\uD83D\uDD25';
+    var msTitle=isPerfect?'Perfect week!':'Streak earned!';
+    var msSub=isPerfect?'All 37 foods — incredible!':'25+ foods this week!';
+    h+='<div onclick="dismissMS()" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px"><div onclick="event.stopPropagation()" style="text-align:center;background:linear-gradient(135deg,#1a2e1a,#0d1f15);border-radius:16px;border:1px solid '+(isPerfect?'rgba(250,204,21,0.3)':'rgba(34,197,94,0.3)')+';padding:30px 24px;max-width:300px;width:100%">';
+    h+='<div style="font-size:56px;margin-bottom:12px">'+msEmoji+'</div>';
+    h+='<h2 style="font-size:22px;color:'+(isPerfect?'#FDE68A':'#86EFAC')+';margin:0 0 4px;font-weight:400">'+msTitle+'</h2>';
+    h+='<p style="font-size:12px;color:#7A9B7A;margin:0 0 20px">'+msSub+'</p>';
+    h+='<button onclick="event.stopPropagation();dismissMS();shareWeek()" style="width:100%;padding:10px;margin-bottom:8px;background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(34,197,94,0.15));border:1px solid rgba(167,139,250,0.3);border-radius:10px;color:#C4DCC4;font-size:12px;font-family:inherit">\uD83D\uDCE4 Share this</button>';
+    h+='<button onclick="dismissMS()" style="width:100%;padding:8px;background:none;border:1px solid rgba(107,155,107,0.15);border-radius:10px;color:#6B9B6B;font-size:10px;font-family:inherit">Keep going</button>';
+    h+='</div></div>';
+  }
+
+  // ========== MODAL ==========
+  if(S.modal!==null){
+    var f=FOODS[S.modal];
+    h+='<div onclick="cm()" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:12px"><div onclick="event.stopPropagation()" style="background:linear-gradient(135deg,#1a2e1a,#0d1f15);border-radius:12px;border:1px solid rgba(107,155,107,0.2);padding:16px;max-width:460px;width:100%;max-height:80vh;overflow:auto">';
+    h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:28px">'+f.emoji+'</span><div><h2 style="font-size:16px;color:#86EFAC;margin:0">'+f.name+'</h2><div style="font-size:9px;color:#6B9B6B">'+f.sub+'</div></div></div>';
+    h+='<div style="font-size:11px;color:#B4A468;font-style:italic;margin-bottom:8px;padding:6px 8px;background:rgba(250,204,21,0.06);border-radius:6px">'+f.fact+'</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"><div style="background:rgba(34,197,94,0.08);border-radius:7px;padding:6px"><div style="font-size:6px;color:#6B9B6B;letter-spacing:1px">SERVING</div><div style="font-size:10px;color:#C4DCC4">'+f.por+'</div></div><div style="background:rgba(250,204,21,0.08);border-radius:7px;padding:6px"><div style="font-size:6px;color:#B4A468;letter-spacing:1px">MIN DOSE</div><div style="font-size:10px;color:#D4C48A">'+f.min+'</div></div></div>';
+    h+='<div style="margin-bottom:8px"><div style="font-size:7px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">NUTRIENTS PER SERVING (% DV)</div><div>';
+    Object.entries(f.nut).forEach(function(e){var k=e[0],v=e[1];var n=NI[k];if(!n)return;h+='<span style="display:inline-block;padding:2px 6px;border-radius:10px;font-size:8px;margin:1px;border:1px solid '+(v>=50?'rgba(34,197,94,0.2)':'rgba(107,155,107,0.1)')+';background:'+(v>=50?'rgba(34,197,94,0.1)':'rgba(255,255,255,0.04)')+';color:'+(v>=100?'#22C55E':v>=50?'#86EFAC':'#7A9B7A')+'">'+n.n+' '+v+'%</span>'});
+    h+='</div></div>';
+    h+='<div style="margin-bottom:8px"><div style="font-size:7px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">RESEARCH</div><p style="font-size:10px;line-height:1.6;color:#A4BCA4;margin:0">'+f.res+'</p></div>';
+    h+='<div><div style="font-size:7px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">DEEPER SCIENCE</div><p style="font-size:10px;line-height:1.6;color:#8AAB8A;margin:0">'+f.deep+'</p></div>';
+    h+='<button onclick="cm()" style="width:100%;margin-top:10px;padding:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:7px;color:#86EFAC;font-size:10px;font-family:inherit">Close</button></div></div>';
+  }
+  document.getElementById("app").innerHTML=h;
+}
+render();
+</script>
+</body>
+</html>
