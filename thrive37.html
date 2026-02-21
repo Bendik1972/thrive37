@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Thrive37">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,7 +12,7 @@
 <title>index</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:Georgia,'Times New Roman',serif;background:linear-gradient(135deg,#0c1a0c 0%,#1a2e1a 40%,#0d1f15 100%);color:#E8F0E4;min-height:100vh;min-height:100dvh;overflow-x:hidden}
+body{font-family:Georgia,'Times New Roman',serif;background:linear-gradient(135deg,#0c1a0c 0%,#1a2e1a 40%,#0d1f15 100%);color:#E8F0E4;min-height:100vh;min-height:100dvh;overflow-x:hidden;touch-action:manipulation}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(34,197,94,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(250,204,21,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(107,155,107,0.3);border-radius:4px}
 button{font-family:inherit;cursor:pointer}
@@ -361,7 +361,7 @@ function render(){
 
   // ========== FOODS TAB ==========
   if(S.view==="board"){
-    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:420px;margin:0 auto">';
+    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 auto">';
     FOODS.forEach(function(f,idx){
       var ch=!!S.ck[f.id],hw=wf.has(f.id);
       // Card
