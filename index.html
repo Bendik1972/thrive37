@@ -297,7 +297,7 @@ function render(){
 
   // Header — compact, clean
   h+='<div style="padding:14px 16px 6px;text-align:center;position:relative;z-index:1">';
-  h+='<h1 style="font-size:clamp(18px,4.5vw,24px);font-weight:400;background:linear-gradient(to right,#22C55E,#FDE68A,#22C55E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0;line-height:1.2">Thrive37</h1>';
+  h+='<h1 style="font-size:clamp(20px,5vw,26px);font-weight:400;color:#E8F0E4;margin:0;line-height:1.2"><span style="color:#4ADE80">Thrive</span><span style="color:#FDE68A">37</span></h1>';
   h+='<p style="font-size:8px;color:#7A9B7A;font-style:italic;margin:3px 0 0">Eat smarter. Feel better. Live longer.</p>';
   h+='</div>';
 
@@ -354,11 +354,13 @@ function render(){
 
   // Nav tabs
   var views=[{id:"board",l:"Foods"},{id:"rda",l:"Nutrients"},{id:"science",l:"Science"},{id:"stats",l:"Progress"}];
-  h+='<div style="display:flex;justify-content:center;gap:0;padding:0 12px 10px;position:relative;z-index:1">';
+  h+='<div style="display:flex;justify-content:center;padding:0 12px 10px;position:relative;z-index:1">';
+  h+='<div style="display:flex;border:1px solid rgba(107,155,107,0.2);border-radius:16px;overflow:hidden">';
   views.forEach(function(v,i){
-    h+='<button onclick="sv(\''+v.id+'\')" style="padding:6px 10px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid '+(S.view===v.id?'#22C55E':'rgba(107,155,107,0.2)')+';color:'+(S.view===v.id?'#86EFAC':'#6B9B6B')+';background:'+(S.view===v.id?'rgba(34,197,94,0.15)':'transparent')+';border-radius:'+(i===0?'16px 0 0 16px':i===3?'0 16px 16px 0':'0')+';font-family:inherit">'+v.l+'</button>';
+    h+='<button onclick="sv(\''+v.id+'\')" style="padding:6px 10px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;border:none;border-right:'+(i<3?'1px solid rgba(107,155,107,0.2)':'none')+';color:'+(S.view===v.id?'#86EFAC':'#6B9B6B')+';background:'+(S.view===v.id?'rgba(34,197,94,0.15)':'transparent')+';font-family:inherit">'+v.l+'</button>';
   });
-  h+='</div><div style="padding:0 8px 100px;position:relative;z-index:1">';
+  h+='</div></div>';
+  h+='<div style="padding:0 8px 100px;position:relative;z-index:1">';
 
   // ========== FOODS TAB ==========
   if(S.view==="board"){
@@ -368,8 +370,8 @@ function render(){
       h+='<div onclick="toggle(\''+f.id+'\')" class="'+(ch?'card-pop':'')+'" style="border-radius:10px;padding:7px 8px;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;gap:5px;border:1px solid '+(ch?'rgba(34,197,94,0.4)':'rgba(107,155,107,0.15)')+';background:'+(ch?'linear-gradient(135deg,rgba(34,197,94,0.15),rgba(34,197,94,0.05))':'rgba(107,155,107,0.04)')+';transition:border-color 0.2s'+(ch?';box-shadow:0 0 8px rgba(34,197,94,0.08)':'')+'">';
       if(hw&&!ch)h+='<div style="position:absolute;top:2px;right:4px;font-size:4.5px;color:#A78BFA;letter-spacing:0.5px">\u2713WK</div>';
       if(ch)h+='<div style="position:absolute;top:2px;right:24px;font-size:10px;color:#22C55E">\u2713</div>';
-      h+='<span style="font-size:14px;flex-shrink:0;'+(ch?'':'opacity:0.5;filter:grayscale(0.3)')+'">'+f.emoji+'</span>';
-      h+='<div style="font-size:9px;font-weight:600;color:'+(ch?'#86EFAC':'#C4DCC4')+';line-height:1.2;flex:1;min-width:0">'+f.name+'</div>';
+      h+='<span style="font-size:13px;flex-shrink:0;'+(ch?'':'opacity:0.5;filter:grayscale(0.3)')+'">'+f.emoji+'</span>';
+      h+='<div style="font-size:8.5px;font-weight:600;color:'+(ch?'#86EFAC':'#C4DCC4')+';line-height:1.25;flex:1;min-width:0">'+f.name+'</div>';
       h+='<button onclick="event.stopPropagation();om('+idx+')" style="background:rgba(107,155,107,0.12);border:1.5px solid rgba(107,155,107,0.45);border-radius:50%;width:20px;height:20px;color:#86EFAC;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit">i</button>';
       h+='</div>';
     });
