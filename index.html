@@ -297,7 +297,7 @@ function render(){
 
   // Header — compact, clean
   h+='<div style="padding:14px 16px 6px;text-align:center;position:relative;z-index:1">';
-  h+='<h1 style="font-size:clamp(18px,4.5vw,24px);font-weight:400;background:linear-gradient(to right,#86EFAC,#FDE68A,#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0;line-height:1.2">Thrive37</h1>';
+  h+='<h1 style="font-size:clamp(18px,4.5vw,24px);font-weight:400;background:linear-gradient(to right,#4ADE80,#FDE68A,#4ADE80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0;line-height:1.2">Thrive37</h1>';
   h+='<p style="font-size:8px;color:#7A9B7A;font-style:italic;margin:3px 0 0">Eat smarter. Feel better. Live longer.</p>';
   h+='</div>';
 
@@ -369,7 +369,7 @@ function render(){
       if(hw&&!ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:5px;color:#A78BFA;letter-spacing:0.5px">\u2713WK</div>';
       if(ch)h+='<div style="position:absolute;top:3px;right:5px;font-size:11px;color:#22C55E">\u2713</div>';
       h+='<div style="display:flex;align-items:center;gap:6px"><span style="font-size:18px;flex-shrink:0;'+(ch?'':'opacity:0.5;filter:grayscale(0.3)')+'">'+f.emoji+'</span><div style="min-width:0;flex:1"><div style="font-size:11px;font-weight:600;color:'+(ch?'#86EFAC':'#C4DCC4')+';line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+f.name+'</div><div style="font-size:7.5px;color:#6B9B6B;line-height:1.2;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+f.sub+'</div></div></div>';
-      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><div style="font-size:7.5px;color:#5A8A5A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">'+f.por+'</div><button onclick="event.stopPropagation();om('+idx+')" style="background:none;border:1px solid rgba(107,155,107,0.25);border-radius:50%;width:16px;height:16px;color:#6B9B6B;font-size:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit">i</button></div>';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><div style="font-size:7.5px;color:#5A8A5A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">'+f.por+'</div><button onclick="event.stopPropagation();om('+idx+')" style="background:rgba(107,155,107,0.1);border:1.5px solid rgba(107,155,107,0.4);border-radius:50%;width:18px;height:18px;color:#86EFAC;font-size:8px;font-weight:bold;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit">i</button></div>';
       h+='</div>';
     });
     h+='</div>';
