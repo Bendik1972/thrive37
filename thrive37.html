@@ -13,9 +13,11 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<script>if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&'ontouchend' in document))document.documentElement.classList.add('ios')</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{touch-action:pan-y;overflow-x:hidden;-ms-content-zooming:none}
+html.ios #app{zoom:1.15}
 body{font-family:Georgia,'Times New Roman',serif;background:linear-gradient(135deg,#0c1a0c 0%,#1a2e1a 40%,#0d1f15 100%);color:#E8F0E4;min-height:100vh;min-height:100dvh;overflow-x:hidden;touch-action:pan-y;max-width:100vw}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(34,197,94,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(250,204,21,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(107,155,107,0.3);border-radius:4px}
@@ -29,7 +31,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 <div id="app"></div>
 <script>
 // Auto-update: bump this number each deploy
-var APP_VERSION="2026-02-22a";
+var APP_VERSION="2026-02-22b";
 (function(){var k="n37_ver",v=localStorage.getItem(k);if(v&&v!==APP_VERSION){localStorage.setItem(k,APP_VERSION);location.reload(true);return}localStorage.setItem(k,APP_VERSION)})();
 
 const FOODS=[
