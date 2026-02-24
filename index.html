@@ -32,7 +32,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 <div id="app"></div>
 <script>
 // Auto-update: bump this number each deploy
-var APP_VERSION="2026-02-22f";
+var APP_VERSION="2026-02-22g";
 (function(){var k="n37_ver",v=localStorage.getItem(k);if(v&&v!==APP_VERSION){localStorage.setItem(k,APP_VERSION);location.reload(true);return}localStorage.setItem(k,APP_VERSION)})();
 
 const FOODS=[
@@ -434,7 +434,7 @@ function render(){
     var yh=calcYearHistory(),yrs=Object.keys(yh).sort().reverse();
     if(yrs.length){
       h+='<div style="background:rgba(255,255,255,0.03);border-radius:9px;padding:10px;border:1px solid rgba(107,155,107,0.08);margin-bottom:10px"><div style="font-size:8px;color:#6B9B6B;letter-spacing:1px;margin-bottom:4px">YEAR HISTORY</div>';
-      yrs.forEach(function(y){var d=yh[y];h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:#C4DCC4;width:36px">'+y+'</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+(d.good/52*100)+'%;background:linear-gradient(to right,#A78BFA,#86EFAC);border-radius:4px"></div></div><span style="font-size:9px;color:#A78BFA;width:44px;text-align:right">'+d.good+'/'+d.total+'</span></div>'});
+      yrs.forEach(function(y){var d=yh[y];h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:#C4DCC4;width:36px">'+y+'</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+(d.good/52*100)+'%;background:linear-gradient(to right,#A78BFA,#86EFAC);border-radius:4px"></div></div><span style="font-size:8px;color:#A78BFA;width:70px;text-align:right">'+d.good+' of '+d.total+' wks</span></div>'});
       h+='</div>';
     }
     // Month badge
@@ -445,9 +445,15 @@ function render(){
     h+='</div></div>';
     // Forgotten
     var fg=FOODS.map(function(f){var l=S.records.lastChecked[f.id];if(!l)return{f:f,d:999};var p=l.split('-').map(Number);return{f:f,d:Math.floor((today-new Date(p[0],p[1]-1,p[2]))/864e5)}}).filter(function(x){return x.d>0&&!S.ck[x.f.id]}).sort(function(a,b){return b.d-a.d});
+    var fgNever=fg.filter(function(x){return x.d===999});
+    var fgOld=fg.filter(function(x){return x.d!==999});
     if(fg.length){
       h+='<div style="background:rgba(239,68,68,0.04);border-radius:9px;padding:10px;border:1px solid rgba(239,68,68,0.08);margin-bottom:10px"><div style="font-size:8px;color:#F87171;letter-spacing:1px;margin-bottom:4px">\u23F0 LONGEST SINCE LAST EATEN</div>';
-      fg.slice(0,10).forEach(function(x){h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;font-size:9px"><span style="font-size:12px">'+x.f.emoji+'</span><span style="color:#C4DCC4;flex:1">'+x.f.name+'</span><span style="color:#F87171;font-size:8px">'+(x.d===999?'Never':x.d+'d ago')+'</span></div>'});
+      fgOld.slice(0,10).forEach(function(x){h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;font-size:9px"><span style="font-size:12px">'+x.f.emoji+'</span><span style="color:#C4DCC4;flex:1">'+x.f.name+'</span><span style="color:#F87171;font-size:8px">'+x.d+'d ago</span></div>'});
+      if(fgNever.length){
+        h+='<div style="font-size:7px;color:#6B9B6B;letter-spacing:1px;margin:6px 0 3px">NEVER EATEN</div>';
+        fgNever.forEach(function(x){h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;font-size:9px"><span style="font-size:12px">'+x.f.emoji+'</span><span style="color:#6B9B6B">'+x.f.name+'</span></div>'});
+      }
       h+='</div>';
     }
     // Missing this week
