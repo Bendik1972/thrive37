@@ -31,7 +31,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 <div id="app"></div>
 <script>
 // Auto-update: bump this number each deploy
-var APP_VERSION="2026-02-22k";
+var APP_VERSION="2026-02-22l";
 (function(){var k="n37_ver",v=localStorage.getItem(k);if(v&&v!==APP_VERSION){localStorage.setItem(k,APP_VERSION);location.reload(true);return}localStorage.setItem(k,APP_VERSION)})();
 
 const FOODS=[
@@ -130,7 +130,7 @@ load();cleanOld();loadDayChecks(gDK(new Date()));
 
 // Text size zoom
 var isIOS=document.documentElement.classList.contains('ios');
-var ZOOM_LEVELS=isIOS?[{label:'Normal',z:1.55},{label:'Large',z:1.7},{label:'Extra large',z:1.85}]:[{label:'Normal',z:1},{label:'Large',z:1.15},{label:'Extra large',z:1.3}];
+var ZOOM_LEVELS=isIOS?[{label:'Normal',z:1.65},{label:'Large',z:1.8},{label:'Extra large',z:1.92}]:[{label:'Normal',z:1},{label:'Large',z:1.15},{label:'Extra large',z:1.3}];
 var zoomIdx=parseInt(localStorage.getItem('n37_zoom')||'0');
 function applyZoom(){document.getElementById('app').style.zoom=ZOOM_LEVELS[zoomIdx].z}
 function setZoom(i){zoomIdx=i;localStorage.setItem('n37_zoom',String(i));applyZoom();S.showZoom=false;render()}
@@ -358,7 +358,7 @@ function render(){
   h+='</div>';
 
   // Week strip
-  var dayW=zoomIdx>0?'26px':'33px',dayCircle=zoomIdx>0?'21px':'24px',dayGap=zoomIdx>0?'1px':'3px';
+  var dayW=(zoomIdx>0||isIOS)?'26px':'33px',dayCircle=(zoomIdx>0||isIOS)?'21px':'24px',dayGap=(zoomIdx>0||isIOS)?'1px':'3px';
   h+='<div style="display:flex;justify-content:center;gap:'+dayGap+';padding:2px 6px 6px;position:relative;z-index:1">';
   wds.forEach(function(d,i){
     var dk=gDK(d),df=(wkd[dk]||[]).length,isT=dk===tk,fu=d>today,isA=dk===ad;
@@ -374,7 +374,7 @@ function render(){
 
   // Nav tabs
   var views=[{id:"board",l:"Foods"},{id:"rda",l:"Nutrients"},{id:"science",l:"Science"},{id:"stats",l:"Progress"}];
-  var tabPad=zoomIdx>0?'5px 5px':'6px 8px',tabSpc=zoomIdx>0?'0.5px':'1px';
+  var tabPad=(zoomIdx>0||isIOS)?'5px 5px':'6px 8px',tabSpc=(zoomIdx>0||isIOS)?'0.5px':'1px';
   h+='<div style="display:flex;justify-content:center;padding:0 12px 10px;position:relative;z-index:1">';
   h+='<div style="display:flex;border:1px solid rgba(107,155,107,0.2);border-radius:16px;overflow:hidden">';
   views.forEach(function(v,i){
