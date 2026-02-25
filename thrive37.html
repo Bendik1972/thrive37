@@ -31,7 +31,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 <div id="app"></div>
 <script>
 // Auto-update: bump this number each deploy
-var APP_VERSION="2026-02-22l";
+var APP_VERSION="2026-02-22m";
 (function(){var k="n37_ver",v=localStorage.getItem(k);if(v&&v!==APP_VERSION){localStorage.setItem(k,APP_VERSION);location.reload(true);return}localStorage.setItem(k,APP_VERSION)})();
 
 const FOODS=[
@@ -133,7 +133,8 @@ var isIOS=document.documentElement.classList.contains('ios');
 var ZOOM_LEVELS=isIOS?[{label:'Normal',z:1.65},{label:'Large',z:1.8},{label:'Extra large',z:1.92}]:[{label:'Normal',z:1},{label:'Large',z:1.15},{label:'Extra large',z:1.3}];
 var zoomIdx=parseInt(localStorage.getItem('n37_zoom')||'0');
 function applyZoom(){document.getElementById('app').style.zoom=ZOOM_LEVELS[zoomIdx].z}
-function setZoom(i){zoomIdx=i;localStorage.setItem('n37_zoom',String(i));applyZoom();S.showZoom=false;render()}
+var cs=[0,2,4][zoomIdx]; // content scale: extra px for science/modal text
+function setZoom(i){zoomIdx=i;localStorage.setItem('n37_zoom',String(i));cs=[0,2,4][i];applyZoom();S.showZoom=false;render()}
 
 function getActiveDay(){return S.editDay||gDK(new Date())}
 
@@ -402,10 +403,10 @@ function render(){
   // ========== NUTRIENTS TAB ==========
   if(S.view==="rda"){
     var lb=ep?tc+' foods (editing)':tc+' food'+(tc!==1?'s':'')+' today';
-    h+='<div style="max-width:600px;margin:0 auto"><div style="text-align:center;margin-bottom:10px;padding:8px;background:rgba(34,197,94,0.08);border-radius:10px;border:1px solid rgba(34,197,94,0.15)"><div style="font-size:10px;color:#86EFAC">'+lb+'</div><div style="font-size:7px;color:#6B9B6B;margin-top:1px">Approximate % Daily Value per serving</div></div>';
+    h+='<div style="max-width:600px;margin:0 auto"><div style="text-align:center;margin-bottom:10px;padding:8px;background:rgba(34,197,94,0.08);border-radius:10px;border:1px solid rgba(34,197,94,0.15)"><div style="font-size:'+(10+cs)+'px;color:#86EFAC">'+lb+'</div><div style="font-size:'+(7+cs)+'px;color:#6B9B6B;margin-top:1px">Approximate % Daily Value per serving</div></div>';
     var so=Object.entries(tn).sort(function(a,b){return b[1]-a[1]});
     so.forEach(function(e){var k=e[0],p=e[1];var n=NI[k];if(!n)return;var c=p>=100?'#22C55E':p>=50?'#FDE68A':'#F87171';
-    h+='<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;margin-bottom:1px;font-size:9px"><span style="color:#C4DCC4">'+n.n+'</span><span style="color:'+c+'">'+Math.round(p)+'%'+(n.r!=='\u2014'?' of '+n.r:'')+'</span></div><div style="height:4px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+Math.min(p/3,100)+'%;background:'+c+';border-radius:3px"></div></div></div>'});
+    h+='<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;margin-bottom:1px;font-size:'+(9+cs)+'px"><span style="color:#C4DCC4">'+n.n+'</span><span style="color:'+c+'">'+Math.round(p)+'%'+(n.r!=='\u2014'?' of '+n.r:'')+'</span></div><div style="height:4px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+Math.min(p/3,100)+'%;background:'+c+';border-radius:3px"></div></div></div>'});
     if(!tc)h+='<div style="text-align:center;padding:30px 0;color:#5A8A5A"><div style="font-size:26px;margin-bottom:6px">\uD83C\uDF31</div><div style="font-size:10px">Check off foods to see nutrients</div></div>';
     h+='</div>';
   }
@@ -414,14 +415,14 @@ function render(){
   if(S.view==="science"){
     h+='<div style="max-width:650px;margin:0 auto">';
     // Individual foods FIRST
-    h+='<div style="font-size:10px;color:#6B9B6B;letter-spacing:1px;margin-bottom:6px;text-align:center">\uD83E\uDDEC DEEPER SCIENCE \u2014 TAP TO EXPAND</div>';
+    h+='<div style="font-size:'+(10+cs)+'px;color:#6B9B6B;letter-spacing:1px;margin-bottom:6px;text-align:center">\uD83E\uDDEC DEEPER SCIENCE \u2014 TAP TO EXPAND</div>';
     FOODS.forEach(function(f){
-      h+='<details style="margin-bottom:4px"><summary style="cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid rgba(107,155,107,0.08);border-radius:7px;padding:8px 10px;font-size:12px;color:#C4DCC4;display:flex;align-items:center;gap:6px"><span style="font-size:15px">'+f.emoji+'</span><span style="flex:1"><b>'+f.name+'</b> <span style="color:#B4A468;font-size:9px;font-style:italic">'+f.fact+'</span></span><span style="font-size:9px;color:#6B9B6B">\u25B8</span></summary><div style="padding:10px 14px;border-left:2px solid rgba(34,197,94,0.15);margin:3px 0 0 20px"><p style="font-size:11px;color:#86EFAC;line-height:1.6;margin:0 0 8px">'+f.res+'</p><p style="font-size:11px;color:#8AAB8A;line-height:1.6;margin:0">'+f.deep+'</p></div></details>';
+      h+='<details style="margin-bottom:4px"><summary style="cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid rgba(107,155,107,0.08);border-radius:7px;padding:8px 10px;font-size:'+(12+cs)+'px;color:#C4DCC4;display:flex;align-items:center;gap:6px"><span style="font-size:'+(15+cs)+'px">'+f.emoji+'</span><span style="flex:1"><b>'+f.name+'</b> <span style="color:#B4A468;font-size:'+(9+cs)+'px;font-style:italic">'+f.fact+'</span></span><span style="font-size:'+(9+cs)+'px;color:#6B9B6B">\u25B8</span></summary><div style="padding:10px 14px;border-left:2px solid rgba(34,197,94,0.15);margin:3px 0 0 20px"><p style="font-size:'+(11+cs)+'px;color:#86EFAC;line-height:1.6;margin:0 0 8px">'+f.res+'</p><p style="font-size:'+(11+cs)+'px;color:#8AAB8A;line-height:1.6;margin:0">'+f.deep+'</p></div></details>';
     });
     // Synergies SECOND
-    h+='<div style="font-size:10px;color:#B4A468;letter-spacing:1px;margin:16px 0 6px;text-align:center">\uD83D\uDD2C FOOD SYNERGIES \u2014 COMBINATIONS THAT MULTIPLY BENEFITS</div>';
+    h+='<div style="font-size:'+(10+cs)+'px;color:#B4A468;letter-spacing:1px;margin:16px 0 6px;text-align:center">\uD83D\uDD2C FOOD SYNERGIES \u2014 COMBINATIONS THAT MULTIPLY BENEFITS</div>';
     SYNERGIES.forEach(function(s){
-      h+='<div style="background:rgba(250,204,21,0.04);border:1px solid rgba(250,204,21,0.08);border-radius:9px;padding:9px 11px;margin-bottom:5px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-size:14px">'+s.i+'</span><span style="font-size:12px;font-weight:bold;color:#D4C48A">'+s.c+'</span></div><div style="font-size:11px;color:#A4A47A;line-height:1.5">'+s.w+'</div></div>';
+      h+='<div style="background:rgba(250,204,21,0.04);border:1px solid rgba(250,204,21,0.08);border-radius:9px;padding:9px 11px;margin-bottom:5px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-size:'+(14+cs)+'px">'+s.i+'</span><span style="font-size:'+(12+cs)+'px;font-weight:bold;color:#D4C48A">'+s.c+'</span></div><div style="font-size:'+(11+cs)+'px;color:#A4A47A;line-height:1.5">'+s.w+'</div></div>';
     });
     h+='</div>';
   }
@@ -507,15 +508,15 @@ function render(){
   if(S.modal!==null){
     var f=FOODS[S.modal];
     h+='<div onclick="cm()" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:12px"><div onclick="event.stopPropagation()" style="background:linear-gradient(135deg,#1a2e1a,#0d1f15);border-radius:12px;border:1px solid rgba(107,155,107,0.2);padding:16px;max-width:460px;width:100%;max-height:80vh;overflow:auto">';
-    h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:28px">'+f.emoji+'</span><div><h2 style="font-size:16px;color:#86EFAC;margin:0">'+f.name+'</h2><div style="font-size:9px;color:#6B9B6B">'+f.sub+'</div></div></div>';
-    h+='<div style="font-size:11px;color:#B4A468;font-style:italic;margin-bottom:8px;padding:6px 8px;background:rgba(250,204,21,0.06);border-radius:6px">'+f.fact+'</div>';
-    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"><div style="background:rgba(34,197,94,0.08);border-radius:7px;padding:6px"><div style="font-size:6px;color:#6B9B6B;letter-spacing:1px">SERVING</div><div style="font-size:10px;color:#C4DCC4">'+f.por+'</div></div><div style="background:rgba(250,204,21,0.08);border-radius:7px;padding:6px"><div style="font-size:6px;color:#B4A468;letter-spacing:1px">MIN DOSE</div><div style="font-size:10px;color:#D4C48A">'+f.min+'</div></div></div>';
-    h+='<div style="margin-bottom:8px"><div style="font-size:7px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">NUTRIENTS PER SERVING (% DV)</div><div>';
-    Object.entries(f.nut).forEach(function(e){var k=e[0],v=e[1];var n=NI[k];if(!n)return;h+='<span style="display:inline-block;padding:2px 6px;border-radius:10px;font-size:8px;margin:1px;border:1px solid '+(v>=50?'rgba(34,197,94,0.2)':'rgba(107,155,107,0.1)')+';background:'+(v>=50?'rgba(34,197,94,0.1)':'rgba(255,255,255,0.04)')+';color:'+(v>=100?'#22C55E':v>=50?'#86EFAC':'#7A9B7A')+'">'+n.n+' '+v+'%</span>'});
+    h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:'+(28+cs*2)+'px">'+f.emoji+'</span><div><h2 style="font-size:'+(16+cs)+'px;color:#86EFAC;margin:0">'+f.name+'</h2><div style="font-size:'+(9+cs)+'px;color:#6B9B6B">'+f.sub+'</div></div></div>';
+    h+='<div style="font-size:'+(11+cs)+'px;color:#B4A468;font-style:italic;margin-bottom:8px;padding:6px 8px;background:rgba(250,204,21,0.06);border-radius:6px">'+f.fact+'</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"><div style="background:rgba(34,197,94,0.08);border-radius:7px;padding:6px"><div style="font-size:'+(6+cs)+'px;color:#6B9B6B;letter-spacing:1px">SERVING</div><div style="font-size:'+(10+cs)+'px;color:#C4DCC4">'+f.por+'</div></div><div style="background:rgba(250,204,21,0.08);border-radius:7px;padding:6px"><div style="font-size:'+(6+cs)+'px;color:#B4A468;letter-spacing:1px">MIN DOSE</div><div style="font-size:'+(10+cs)+'px;color:#D4C48A">'+f.min+'</div></div></div>';
+    h+='<div style="margin-bottom:8px"><div style="font-size:'+(7+cs)+'px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">NUTRIENTS PER SERVING (% DV)</div><div>';
+    Object.entries(f.nut).forEach(function(e){var k=e[0],v=e[1];var n=NI[k];if(!n)return;h+='<span style="display:inline-block;padding:2px 6px;border-radius:10px;font-size:'+(8+cs)+'px;margin:1px;border:1px solid '+(v>=50?'rgba(34,197,94,0.2)':'rgba(107,155,107,0.1)')+';background:'+(v>=50?'rgba(34,197,94,0.1)':'rgba(255,255,255,0.04)')+';color:'+(v>=100?'#22C55E':v>=50?'#86EFAC':'#7A9B7A')+'">'+n.n+' '+v+'%</span>'});
     h+='</div></div>';
-    h+='<div style="margin-bottom:8px"><div style="font-size:7px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">RESEARCH</div><p style="font-size:10px;line-height:1.6;color:#A4BCA4;margin:0">'+f.res+'</p></div>';
-    h+='<div><div style="font-size:7px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">DEEPER SCIENCE</div><p style="font-size:10px;line-height:1.6;color:#8AAB8A;margin:0">'+f.deep+'</p></div>';
-    h+='<button onclick="cm()" style="width:100%;margin-top:10px;padding:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:7px;color:#86EFAC;font-size:10px;font-family:inherit">Close</button></div></div>';
+    h+='<div style="margin-bottom:8px"><div style="font-size:'+(7+cs)+'px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">RESEARCH</div><p style="font-size:'+(10+cs)+'px;line-height:1.6;color:#A4BCA4;margin:0">'+f.res+'</p></div>';
+    h+='<div><div style="font-size:'+(7+cs)+'px;color:#6B9B6B;letter-spacing:1px;margin-bottom:3px">DEEPER SCIENCE</div><p style="font-size:'+(10+cs)+'px;line-height:1.6;color:#8AAB8A;margin:0">'+f.deep+'</p></div>';
+    h+='<button onclick="cm()" style="width:100%;margin-top:10px;padding:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:7px;color:#86EFAC;font-size:'+(10+cs)+'px;font-family:inherit">Close</button></div></div>';
   }
   document.getElementById("app").innerHTML=h;
   applyZoom();
