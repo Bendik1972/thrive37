@@ -1,4 +1,4 @@
-var CACHE_VERSION='v2026-02-22m';
+var CACHE_VERSION='v2026-02-22n';
 var CACHE_NAME='thrive37-'+CACHE_VERSION;
 
 self.addEventListener('install',function(e){
