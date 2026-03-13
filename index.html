@@ -31,7 +31,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 <div id="app"></div>
 <script>
 // Auto-update: bump this number each deploy
-var APP_VERSION="2026-02-22p";
+var APP_VERSION="2026-02-22q";
 (function(){var k="n37_ver",v=localStorage.getItem(k);if(v&&v!==APP_VERSION){localStorage.setItem(k,APP_VERSION);location.reload(true);return}localStorage.setItem(k,APP_VERSION)})();
 
 const FOODS=[
@@ -102,7 +102,7 @@ const gWK=d=>gDK(gWS(d));
 const pDK=s=>{const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2])};
 
 let S={ck:{},wd:{},view:"board",modal:null,editDay:null,
-  records:{monthBadges:{},lastChecked:{}},milestone:null,showZoom:false,bannerOff:false};
+  records:{monthBadges:{},lastChecked:{}},milestone:null,showZoom:false};
 
 function save(){try{localStorage.setItem("n37v4",JSON.stringify({v:4,wd:S.wd,records:S.records}))}catch(e){}}
 
@@ -371,17 +371,6 @@ function render(){
   if(ep){
     var pp=ad.split('-').map(Number),ed=new Date(pp[0],pp[1]-1,pp[2]),dN=dn[(ed.getDay()+6)%7];
     h+='<div style="text-align:center;padding:3px 16px;z-index:1;position:relative"><div style="display:inline-flex;align-items:center;gap:6px;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.2);border-radius:16px;padding:3px 10px"><span style="font-size:8px;color:#FDE68A">\u270F\uFE0F '+dN+' '+pp[2]+'/'+pp[1]+'</span><button onclick="selectDay(\''+tk+'\')" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:2px 7px;font-size:7px;color:#86EFAC;font-family:inherit">\u2190 Today</button></div></div>';
-  }
-
-  // Motivational banner — Fri, Sat, Sun
-  var dow=today.getDay();
-  if(!S.bannerOff&&(dow===5||dow===6||dow===0)){
-    var rem=WEEKLY-wc;
-    var bTxt,bCol,bBg,bBrd;
-    if(wc>=T){bTxt='\uD83C\uDF89 Perfect week! All '+T+' superfoods!';bCol='#FDE68A';bBg='rgba(250,204,21,0.08)';bBrd='rgba(250,204,21,0.2)'}
-    else if(wc>=WEEKLY){bTxt='\uD83D\uDD25 Streak secured! Can you reach all '+T+'?';bCol='#86EFAC';bBg='rgba(34,197,94,0.08)';bBrd='rgba(34,197,94,0.2)'}
-    else{bTxt='\uD83C\uDFAF '+wc+' superfoods this week \u2014 only '+rem+' to go for your streak!';bCol='#A78BFA';bBg='rgba(167,139,250,0.08)';bBrd='rgba(167,139,250,0.2)'}
-    h+='<div style="margin:0 12px 6px;padding:8px 12px;border-radius:10px;background:'+bBg+';border:1px solid '+bBrd+';display:flex;align-items:center;gap:8px;position:relative;z-index:1"><div style="flex:1;font-size:9px;color:'+bCol+';line-height:1.4">'+bTxt+'</div><button onclick="S.bannerOff=true;render()" style="background:none;border:none;color:#6B9B6B;font-size:12px;padding:0 2px;font-family:inherit">\u2715</button></div>';
   }
 
   // Nav tabs
