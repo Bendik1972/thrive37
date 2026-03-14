@@ -31,7 +31,7 @@ details>summary{list-style:none}details>summary::-webkit-details-marker{display:
 <div id="app"></div>
 <script>
 // Auto-update: bump this number each deploy
-var APP_VERSION="2026-03-14a";
+var APP_VERSION="2026-03-14b";
 (function(){var k="n37_ver",v=localStorage.getItem(k);if(v&&v!==APP_VERSION){localStorage.setItem(k,APP_VERSION);location.reload(true);return}localStorage.setItem(k,APP_VERSION)})();
 
 const FOODS=[
@@ -595,8 +595,8 @@ function render(){
   });
   h+='</div></div>';
   // Tip of the Day button
-  h+='<div style="display:flex;justify-content:center;padding:0 16px 10px;position:relative;z-index:1">';
-  h+='<button onclick="openTip()" style="padding:8px 16px;border-radius:12px;border:1.5px solid rgba(250,204,21,0.3);background:linear-gradient(135deg,rgba(250,204,21,0.08),rgba(34,197,94,0.06));color:#FDE68A;font-size:9px;font-family:inherit;display:flex;align-items:center;gap:6px;letter-spacing:0.5px;white-space:nowrap"><span style="font-size:14px">\uD83D\uDCA1</span> Longevity Tip of the Day</button>';
+  h+='<div style="text-align:center;padding:0 16px 10px;position:relative;z-index:1">';
+  h+='<button onclick="openTip()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:12px;border:1.5px solid rgba(250,204,21,0.35);background:linear-gradient(135deg,rgba(250,204,21,0.1),rgba(34,197,94,0.06));color:#FDE68A;font-size:9px;font-family:inherit;letter-spacing:0.5px;white-space:nowrap;-webkit-appearance:none"><span style="font-size:15px">\uD83D\uDCA1</span> Longevity Tip of the Day</button>';
   h+='</div>';
   h+='<div style="padding:0 8px 100px;position:relative;z-index:1">';
 
@@ -712,7 +712,7 @@ function render(){
     h+='<div style="text-align:center;margin-bottom:12px"><span style="font-size:32px">\uD83D\uDCA1</span></div>';
     h+='<div style="font-size:'+(12+cs)+'px;font-weight:bold;color:#FDE68A;text-align:center;margin-bottom:12px;line-height:1.4">'+tip.t+'</div>';
     h+='<div style="font-size:'+(10+cs)+'px;color:#C4DCC4;line-height:1.7;text-align:left">'+tip.b+'</div>';
-    h+='<div style="text-align:center;margin-top:14px;font-size:7px;color:#5A8A5A">Tip '+(tipIdx+1)+' of '+TIPS.length+' \u2022 New tip every day</div>';
+    h+='<div style="text-align:center;margin-top:14px;font-size:7px;color:#5A8A5A">New tip every day</div>';
     h+='<button onclick="closeTip()" style="display:block;width:100%;margin-top:12px;padding:10px;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.25);border-radius:8px;color:#FDE68A;font-size:'+(10+cs)+'px;font-family:inherit">Close</button>';
     h+='</div></div>';
   }
